@@ -21,5 +21,4 @@ exports.ObtenerSaldo = async (req, res) =>{
     else{
         res.sendStatus(401);
     }
-    
 }

@@ -17,6 +17,7 @@ app.use(express.json());
 //Routes
 app.use('/api/users',cors(corsOptions), require('./routes/usuarios'));
 app.use('/api/auth', cors(corsOptions), require('./routes/auth'));
+app.use('/api/general', cors(corsOptions), require('./routes/general'));
 
 //init del server
 server.listen(port, () => {

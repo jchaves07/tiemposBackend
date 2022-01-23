@@ -33,8 +33,7 @@ const getUserByUsername = (Username) => {
           
            resolve(rows[0]);
           })
-    })
-   
+    }) 
 }
 const getCurrentBalance = (UserId) => {
 
@@ -54,8 +53,29 @@ const getCurrentBalance = (UserId) => {
            resolve(rows[0].Balance);
           })
     })
+}
+const getSorteos = () => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT id, Name, HoraLimite, isParlay FROM TiemposDB.Sorteos', function (err, rows, fields) {
+            if (err){
+                reject(err.sqlMessage)
+            }
+          
+           resolve(rows);
+          })
+    })
    
 }
+//SELECT id, Name, HoraLimite, isParlay FROM TiemposDB.Sorteos
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;
 exports.getCurrentBalance = getCurrentBalance;
+exports.getSorteos = getSorteos;

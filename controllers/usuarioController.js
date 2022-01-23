@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser } = require('../config/db');
+const { insertNewUser, getCurrentBalance } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
     const { idUsers, username, password, type, agentParent } = req.body
     //crear nuevo usuario 
@@ -8,4 +8,18 @@ exports.nuevoUsuario = async (req, res) => {
     let encryptedPassword = await bcrypt.hash(password, salt);
     insertNewUser(idUsers, username, encryptedPassword, type, agentParent);
     res.sendStatus(200);
+}
+
+exports.ObtenerSaldo = async (req, res) =>{
+    if(req.usuario){
+        console.log(req.usuario.idUsers)
+        getCurrentBalance(req.usuario.idUsers).then(response=>{
+            res.json({Balance: response})
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+    
 }

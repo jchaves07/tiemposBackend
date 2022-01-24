@@ -78,6 +78,27 @@ const getSorteos = () => {
     })
    
 }
+const getLimiteSorteo = (id) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT Numero, Monto, SorteoId FROM TiemposDB.LimiteGeneralSorteos where SorteoId = ?', [id], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+   
+}
 const insertSorteo = ( Name, HoraLimite, isParlay) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -87,15 +108,19 @@ const insertSorteo = ( Name, HoraLimite, isParlay) => {
     })
     connection.connect();
     var sorteoAdd = {  Name, HoraLimite, isParlay };
-    var query = connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
+    connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
         if (error) throw error;
-        // Neat!
+        for (let index = 0; index < 100; index++) {
+            let limitAdd = {Numero: index, Monto: 0, SorteoId: results.insertId};
+            connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (error, results, fields) {
+            })
+        }
         connection.end();
     });
 }
-//SELECT id, Name, HoraLimite, isParlay FROM TiemposDB.Sorteos
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;
 exports.getCurrentBalance = getCurrentBalance;
 exports.getSorteos = getSorteos;
 exports.insertSorteo = insertSorteo;
+exports.getLimiteSorteo = getLimiteSorteo;

@@ -1,4 +1,4 @@
-const { insertSorteo } = require('../config/db');
+const { insertSorteo, getLimiteSorteo } = require('../config/db');
 
 exports.agregarSorteo = async (req, res) =>{
     const {Name, HoraLimite, isParlay} = req.body
@@ -6,6 +6,18 @@ exports.agregarSorteo = async (req, res) =>{
         console.log(req.usuario.idUsers)
         insertSorteo(Name, HoraLimite, isParlay);
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.getLimiteSorteo = async (req, res) =>{
+    if(req.usuario){
+        const { id } = req.body;
+        getLimiteSorteo(id).then(response=>{
+            res.json(response)
+        });
        
     }
     else{

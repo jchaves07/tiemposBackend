@@ -57,6 +57,7 @@ const getCurrentBalance = (UserId) => {
           })
     })
 }
+
 const getSorteos = () => {
 
     return new Promise((resolve, reject) =>{
@@ -97,7 +98,6 @@ const getLimiteSorteo = (id) => {
            resolve(rows);
           })
     })
-   
 }
 const insertSorteo = ( Name, HoraLimite, isParlay) => {
     const connection = mysql.createConnection({
@@ -117,6 +117,26 @@ const insertSorteo = ( Name, HoraLimite, isParlay) => {
         }
         connection.end();
     });
+}
+
+exports.getUserList = () =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select * from TiemposDB.VW_UserList', function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
 }
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;

@@ -5,4 +5,5 @@ const auth = require('../middleware/auth');
 
 
 router.get('/Sorteos', auth, generalController.getSorteos)
+router.post('/sendmail', generalController.sendMail);
 module.exports = router;

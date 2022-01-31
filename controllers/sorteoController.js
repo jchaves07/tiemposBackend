@@ -1,4 +1,4 @@
-const { insertSorteo, getLimiteSorteo, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, getLimiteSorteo, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.agregarSorteo = async (req, res) =>{
     const {Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga} = req.body
@@ -46,6 +46,17 @@ exports.CompraNumeros = async (req, res) =>{
         })
         
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.SetGanador = async (req, res) =>{
+    if(req.usuario){
+        const { IdSorteo, Fecha, Numero } = req.body;
+        setGanador(IdSorteo, Fecha, Numero);
+        
+        res.json({msg: "Sorteo gradeado con exito", isSuccess: true})
     }
     else{
         res.sendStatus(401);

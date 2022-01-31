@@ -68,7 +68,7 @@ const getSorteos = () => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT id, Name, HoraLimite, isParlay FROM TiemposDB.Sorteos', function (err, rows, fields) {
+        connection.query('SELECT id, Name, HoraLimite, isParlay, Paga FROM TiemposDB.Sorteos', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -162,7 +162,7 @@ exports.getSorteosBySorteoID = SorteoID =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT Fecha, sum(Monto) MontoJugado FROM TiemposDB.CompraNumeros where IdSorteo = ? group by Fecha', [SorteoID], function (err, rows, fields) {
+        connection.query('SELECT Fecha, sum(Monto) MontoJugado, (select Numero from  TiemposDB.GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM TiemposDB.CompraNumeros  t where IdSorteo = ? group by Fecha', [SorteoID], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -208,6 +208,23 @@ connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ? );', addAmount, functio
     connection.end();
 });
     //CALL `TiemposDB`.`AddAmount`(<{IN IdSorteo INT}>, <{IN Fecha DATETIME}>, <{IN IdUser INT}>, <{IN Numero INT}>, <{IN Monto DECIMAL(12,2)}>);
+}
+exports.setGanador = (IdSorteo, Fecha, Numero) => {
+    // 
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    
+    var addWinner = {IdSorteo, Fecha, Numero};
+connection.query('INSERT INTO TiemposDB.GanadorPorSorteo SET ?', addWinner, function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
 }
 
 exports.insertNewUser = insertNewUser;

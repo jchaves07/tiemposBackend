@@ -6,4 +6,8 @@ const auth = require('../middleware/auth');
 router.post('/', usuarioController.nuevoUsuario);
 router.get('/ObtenerSaldo', auth, usuarioController.ObtenerSaldo);
 router.get('/userList', auth, usuarioController.ObtenerUsuarios);
+router.get('/getUserMovements', auth, usuarioController.getUserMovements);
+router.post('/AgregaSaldo', auth, usuarioController.AgregaSaldo);
+
+
 module.exports = router;

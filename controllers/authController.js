@@ -14,7 +14,7 @@ exports.authUser = async (req, res, next) => {
                 Username: response.Username,
                 Type: response.Type,
                 AgentParent: response.AgentParent
-            }, process.env.SECRET, { expiresIn: '1m' });
+            }, process.env.SECRET, { expiresIn: '10h' });
             res.send({ token });
         }
         else {

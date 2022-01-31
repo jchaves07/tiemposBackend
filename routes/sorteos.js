@@ -6,4 +6,6 @@ const auth = require('../middleware/auth');
 
 router.post('/Agregar', auth, sorteoController.agregarSorteo);
 router.post('/LimitesPorSorteo', auth, sorteoController.getLimiteSorteo);
+router.post('/CompraNumeros', auth, sorteoController.CompraNumeros);
+router.post('/getSorteosBySorteoID', auth, sorteoController.GetSorteosBySorteoID);
 module.exports = router;

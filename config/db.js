@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../variables.env' });
 const mysql = require('mysql');
 
 
-const insertNewUser = (idUsers, Username, Password, Type, AgentParent) => {
+const insertNewUser = (Username, Password, Type, AgentParent) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -10,7 +10,7 @@ const insertNewUser = (idUsers, Username, Password, Type, AgentParent) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    var userAdd = { idUsers, Username, Password, Type, AgentParent };
+    var userAdd = { Username, Password, Type, AgentParent };
     var query = connection.query('INSERT INTO Users SET ?', userAdd, function (error, results, fields) {
         if (error) throw error;
         // Neat!
@@ -99,7 +99,7 @@ const getLimiteSorteo = (id) => {
           })
     })
 }
-const insertSorteo = ( Name, HoraLimite, isParlay) => {
+const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -107,7 +107,7 @@ const insertSorteo = ( Name, HoraLimite, isParlay) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    var sorteoAdd = {  Name, HoraLimite, isParlay };
+    var sorteoAdd = {  Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga };
     connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
         if (error) throw error;
         for (let index = 0; index < 100; index++) {
@@ -118,7 +118,21 @@ const insertSorteo = ( Name, HoraLimite, isParlay) => {
         connection.end();
     });
 }
-
+exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect();
+var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto ];
+connection.query('CALL `TiemposDB`.`TiemposDB.BuyNumber`(? , ? , ? , ? , ? );', buyNumber, function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
+}
 exports.getUserList = () =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -138,6 +152,64 @@ exports.getUserList = () =>{
           })
     })
 }
+exports.getSorteosBySorteoID = SorteoID =>{
+   
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT Fecha, sum(Monto) MontoJugado FROM TiemposDB.CompraNumeros where IdSorteo = ? group by Fecha', [SorteoID], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+
+}
+exports.getUserMovements = UserId =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT * FROM VW_Movements where UserId = ?', [UserId], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+
+exports.AgregaSaldo = (IdUser , PartentID , Amount) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect();
+var addAmount = [  IdUser , PartentID , Amount ];
+connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ? );', addAmount, function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
+    //CALL `TiemposDB`.`AddAmount`(<{IN IdSorteo INT}>, <{IN Fecha DATETIME}>, <{IN IdUser INT}>, <{IN Numero INT}>, <{IN Monto DECIMAL(12,2)}>);
+}
+
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;
 exports.getCurrentBalance = getCurrentBalance;

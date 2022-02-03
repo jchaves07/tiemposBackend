@@ -1,4 +1,4 @@
-const { getSorteos } = require('../config/db');
+const { getSorteos, getReporteSemanal } = require('../config/db');
 const nodemailer = require("nodemailer");
 
 exports.getSorteos = async (req, res) =>{
@@ -8,6 +8,17 @@ exports.getSorteos = async (req, res) =>{
             res.json({Sorteos: response})
         });
        
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.ReporteSemanal = async (req, res) =>{
+    if(req.usuario){
+        const {agentParentId} = req.body;
+        getReporteSemanal(agentParentId).then(response=>{
+            res.json({response})
+        });
     }
     else{
         res.sendStatus(401);

@@ -1,11 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const schedule = require('node-schedule');
 const { application } = require('express');
+const { CreateSorteos } = require('./config/db');
 const app = express();
 const server = http.createServer(app);
 
-
+const job = schedule.scheduleJob('29 23 * * *', function(){
+  CreateSorteos();
+  console.log('Ejecucion de creacion de sorteos');
+});
 //puerto de la app
 const port = process.env.PORT || 4000;
 var corsOptions = {
@@ -19,6 +24,9 @@ app.use('/api/users',cors(corsOptions), require('./routes/usuarios'));
 app.use('/api/auth', cors(corsOptions), require('./routes/auth'));
 app.use('/api/general', cors(corsOptions), require('./routes/general'));
 app.use('/api/sorteos', cors(corsOptions), require('./routes/sorteos'));
+
+
+
 
 //init del server
 server.listen(port, () => {

@@ -8,6 +8,8 @@ router.get('/ObtenerSaldo', auth, usuarioController.ObtenerSaldo);
 router.get('/userList', auth, usuarioController.ObtenerUsuarios);
 router.get('/getUserMovements', auth, usuarioController.getUserMovements);
 router.post('/AgregaSaldo', auth, usuarioController.AgregaSaldo);
+router.post('/ObtenerSaldoByUserId', auth, usuarioController.ObtenerSaldoByUserId);
+
 
 
 module.exports = router;

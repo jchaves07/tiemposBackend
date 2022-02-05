@@ -21,6 +21,18 @@ exports.ObtenerSaldo = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+exports.ObtenerSaldoByUserId = async (req, res) =>{
+    const {UserId} = req.body;
+    if(req.usuario){
+        getCurrentBalance(UserId).then(response=>{
+            res.json({Balance: response})
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
 exports.getUserMovements = async (req,res) =>{
     if(req.usuario){
         getUserMovements(req.usuario.idUsers).then(response =>{

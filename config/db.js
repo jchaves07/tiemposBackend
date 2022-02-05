@@ -227,7 +227,6 @@ connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ? );', addAmount, functio
     
     connection.end();
 });
-    //CALL `TiemposDB`.`AddAmount`(<{IN IdSorteo INT}>, <{IN Fecha DATETIME}>, <{IN IdUser INT}>, <{IN Numero INT}>, <{IN Monto DECIMAL(12,2)}>);
 }
 
 exports.CreateSorteos = () =>{
@@ -260,6 +259,26 @@ connection.query('CALL `TiemposDB`.`DeclaraGanador`(? , ? , ? );', addWinner, fu
     
     connection.end();
 });
+}
+
+exports.GetAvalaibleSorteos = () => {
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT * FROM VW_GetAvalaibleSorteos', function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
 }
 
 exports.insertNewUser = insertNewUser;

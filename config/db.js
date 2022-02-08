@@ -2,6 +2,22 @@ require('dotenv').config({ path: '../variables.env' });
 const mysql = require('mysql');
 
 
+///update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = 7  and Number = 2 and Fecha = '2022-02-07'
+exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    var pos = [ IdSorteo, numb, Fecha ];
+    var query = connection.query('update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+        connection.end();
+    });
+}
 const insertNewUser = (Username, Password, Type, AgentParent) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -16,6 +32,27 @@ const insertNewUser = (Username, Password, Type, AgentParent) => {
         // Neat!
         connection.end();
     });
+}
+//select Name, HoraLimite from TiemposDB.Sorteos where Id = 6
+exports.getSorteoName = (Id) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select Name, HoraLimite from TiemposDB.Sorteos where Id = ?', [Id], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    }) 
 }
 const getUserByUsername = (Username) => {
 
@@ -138,6 +175,35 @@ const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, Pa
         connection.end();
     });
 }
+
+//
+exports.VentasPorNumero = (IdSorteo , Fecha) =>{
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        var filter = [  IdSorteo , Fecha ]; 
+        var sql = mysql.format('SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo x left join TiemposDB.CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?', filter);
+        console.log(sql)
+        connection.query(sql, function (error, results, fields) {
+            if (error){
+                connection.end();
+                reject(error.sqlMessage)
+            }
+            connection.end();
+           resolve(results);
+        });
+    })
+
+
+}
+
+
 exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,

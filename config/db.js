@@ -84,7 +84,7 @@ exports.getReporteSemanal = (IdAgentParent) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from VW_ReporteSaldos where AgentParent = ?', [IdAgentParent], function (err, rows, fields) {
+        connection.query('select * from VW_ReporteSaldos where AgentParent = ? or idUsers = ?', [IdAgentParent, IdAgentParent], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -188,7 +188,7 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
         })
         connection.connect();
         var filter = [  IdSorteo , Fecha ]; 
-        var sql = mysql.format('SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo x left join TiemposDB.CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?', filter);
+        var sql = mysql.format('select Number, Sum(Monto) Monto, Fecha, Disponible from (SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo x left join TiemposDB.CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?) x group by Number, Fecha, Disponible', filter);
         console.log(sql)
         connection.query(sql, function (error, results, fields) {
             if (error){
@@ -204,7 +204,7 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
 }
 
 
-exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto) =>{
+exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -212,8 +212,8 @@ exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto) =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto ];
-connection.query('CALL `TiemposDB`.`TiemposDB.BuyNumber`(? , ? , ? , ? , ? );', buyNumber, function (error, results, fields) {
+var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket ];
+connection.query('CALL `TiemposDB`.`BuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -257,8 +257,93 @@ exports.getSorteosBySorteoID = SorteoID =>{
            resolve(rows);
           })
     })
-
 }
+exports.GetNumerosDisponibles = (SorteoID, Fecha) =>{
+   
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        var filter = [  SorteoID , Fecha ]; 
+        connection.query('SELECT Number, Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo where IdSorteo = ? and Fecha = ?', filter, function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+//select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = 0
+exports.jerarquiaUsuarioParent = Type =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ?', [Type], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+
+
+exports.jerarquiaUsuarioByAgentParent = AgentParent =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT idUsers, IFNULL(Fullname, Username) User, UT.Description Type, UT.Id IdType FROM TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type where AgentParent = ?', [AgentParent], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+//
+
+exports.cloneTicket = IdTicket =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select Numero, Monto from TiemposDB.CompraNumeros	where IdTicket = ?', [IdTicket], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+
+
+
 exports.getUserMovements = UserId =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -346,7 +431,25 @@ exports.GetAvalaibleSorteos = () => {
           })
     })
 }
-
+exports.GetIdTicket = () => {
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('CALL `TiemposDB`.`CreateTicketNumber`();', function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    })
+}
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;
 exports.getCurrentBalance = getCurrentBalance;

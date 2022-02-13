@@ -1,4 +1,4 @@
-const { insertSorteo,VentasPorNumero,changeAvalaibleNumber, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -26,6 +26,20 @@ exports.agregarSorteo = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+//
+exports.cloneTicket = async (req, res) =>{
+    if(req.usuario){
+        const {IdTicket} = req.body;
+        cloneTicket(IdTicket)
+        .then(response => {
+            res.json(response);
+        })
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+
 //VentasPorNumero
 exports.VentasPorNumero = async (req, res) =>{
     if(req.usuario){
@@ -78,12 +92,37 @@ exports.getLimiteSorteo = async (req, res) =>{
     }
 }
 
+exports.GetIdTicket = async (req, res) =>{
+    if(req.usuario){
+        const { id } = req.body;
+        GetIdTicket().then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.GetNumerosDisponibles = async (req, res) =>{
+    if(req.usuario){
+        const { SorteoID, Fecha } = req.body;
+        GetNumerosDisponibles(SorteoID, Fecha).then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+//
 exports.CompraNumeros = async (req, res) =>{
     if(req.usuario){
         const { numeros } = req.body;
         numeros.map(item=>{
-            const {IdSorteo , Fecha , IdUser , Numero , Monto} = item;
-            compraNumero(IdSorteo , Fecha , req.usuario.idUsers , Numero , Monto);
+            const {IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket} = item;
+            compraNumero(IdSorteo , Fecha , req.usuario.idUsers , Numero , Monto, IdTicket);
         })
         
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
@@ -103,3 +142,4 @@ exports.SetGanador = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+

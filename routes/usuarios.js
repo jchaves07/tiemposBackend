@@ -9,7 +9,9 @@ router.get('/userList', auth, usuarioController.ObtenerUsuarios);
 router.get('/getUserMovements', auth, usuarioController.getUserMovements);
 router.post('/AgregaSaldo', auth, usuarioController.AgregaSaldo);
 router.post('/ObtenerSaldoByUserId', auth, usuarioController.ObtenerSaldoByUserId);
+router.post('/jerarquiaUsuarioParent', auth, usuarioController.jerarquiaUsuarioParent);
+router.post('/jerarquiaUsuarioByAgentParent', auth, usuarioController.jerarquiaUsuarioByAgentParent);
 
-
+//
 
 module.exports = router;

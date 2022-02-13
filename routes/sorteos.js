@@ -13,4 +13,8 @@ router.post('/setGanador', auth, sorteoController.SetGanador);
 router.post('/GetSorteoName', auth, sorteoController.GetSorteoName);
 router.post('/VentasPorNumero', auth, sorteoController.VentasPorNumero);
 router.post('/changeAvalaibleNumber', auth, sorteoController.changeAvalaibleNumber);
+router.post('/GetIdTicket', auth, sorteoController.GetIdTicket);
+router.post('/GetNumerosDisponibles', auth, sorteoController.GetNumerosDisponibles);
+router.post('/cloneTicket', auth, sorteoController.cloneTicket);
+ 
 module.exports = router;

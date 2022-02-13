@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser, getCurrentBalance, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+const { insertNewUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
     const {  username, password, type, agentParent } = req.body
     //crear nuevo usuario 
@@ -21,6 +21,32 @@ exports.ObtenerSaldo = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+//
+exports.jerarquiaUsuarioByAgentParent = async (req, res) =>{
+    const {Agentparent} = req.body;
+    if(req.usuario){
+        jerarquiaUsuarioByAgentParent(Agentparent).then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.jerarquiaUsuarioParent = async (req, res) =>{
+    const {Type} = req.body;
+    if(req.usuario){
+        jerarquiaUsuarioParent(Type).then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+
 exports.ObtenerSaldoByUserId = async (req, res) =>{
     const {UserId} = req.body;
     if(req.usuario){

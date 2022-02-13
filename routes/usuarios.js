@@ -11,7 +11,7 @@ router.post('/AgregaSaldo', auth, usuarioController.AgregaSaldo);
 router.post('/ObtenerSaldoByUserId', auth, usuarioController.ObtenerSaldoByUserId);
 router.post('/jerarquiaUsuarioParent', auth, usuarioController.jerarquiaUsuarioParent);
 router.post('/jerarquiaUsuarioByAgentParent', auth, usuarioController.jerarquiaUsuarioByAgentParent);
-
+router.post('/getUserMovementsByDateAndUser', auth, usuarioController.getUserMovementsByDateAndUser);
 //
 
 module.exports = router;

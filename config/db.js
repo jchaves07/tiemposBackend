@@ -342,7 +342,26 @@ exports.cloneTicket = IdTicket =>{
     })
 }
 
-
+//select * from TiemposDB.VW_Movements where createdDate = ? and UserId = ?
+exports.getUserMovementsByDateAndUser = (createdDate,UserId) =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select * from TiemposDB.VW_Movements where Date(createdDate) = ? and UserId = ?', [createdDate, UserId], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
 
 exports.getUserMovements = UserId =>{
     return new Promise((resolve, reject) =>{

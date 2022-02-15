@@ -74,7 +74,7 @@ const getUserByUsername = (Username) => {
           })
     }) 
 }
-exports.getReporteSemanal = (IdAgentParent) =>{
+exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
     //select * from VW_ReporteSaldos where AgentParent = 3
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -84,7 +84,8 @@ exports.getReporteSemanal = (IdAgentParent) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from VW_ReporteSaldos where AgentParent = ? or idUsers = ?', [IdAgentParent, IdAgentParent], function (err, rows, fields) {
+        console.log(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1)`)
+        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1)`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -466,6 +467,26 @@ exports.GetIdTicket = () => {
             }
             connection.end();
            resolve(rows[0]);
+          })
+    })
+}
+
+exports.GetWeeks = () => {
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('CALL `TiemposDB`.`getWeek`();', function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
           })
     })
 }

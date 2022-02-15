@@ -103,7 +103,7 @@ exports.GetIdTicket = async (req, res) =>{
     else{
         res.sendStatus(401);
     }
-}
+} 
 exports.GetNumerosDisponibles = async (req, res) =>{
     if(req.usuario){
         const { SorteoID, Fecha } = req.body;

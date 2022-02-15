@@ -8,5 +8,6 @@ router.get('/Sorteos', auth, generalController.getSorteos)
 router.post('/sendmail', generalController.sendMail);
 router.post('/ReporteSemanal', auth, generalController.ReporteSemanal);
 router.get('/getSorteosDropdown', auth, generalController.getSorteosDropdown);
+router.get('/GetWeeks', auth, generalController.GetWeeks);
 
 module.exports = router;

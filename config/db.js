@@ -157,6 +157,20 @@ const getLimiteSorteo = (id) => {
           })
     })
 }
+exports.editSorteo = ( Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+
+    connection.query(`update TiemposDB.Sorteos set Name = '${Name}', HoraLimite = '${HoraLimite}', ParleyL = ${ParleyL}, ParleyM = ${ParleyM}, ParleyK = ${ParleyK}, ParleyJ = ${ParleyJ}, ParleyV = ${ParleyV}, ParleyS = ${ParleyS}, ParleyD = ${ParleyD}, SorteoL = ${SorteoL}, SorteoM = ${SorteoM}, SorteoK = ${SorteoK}, SorteoJ = ${SorteoJ}, SorteoV = ${SorteoV}, SorteoS = ${SorteoS}, SorteoD = ${SorteoD}, Paga = ${Paga} where Id = ${Id}`, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
 const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -249,7 +263,7 @@ exports.getSorteosBySorteoID = SorteoID =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT t.Fecha, IFNULL(sum(Monto),0) MontoJugado, (select Numero from  TiemposDB.GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM TiemposDB.SorteosDisponibles t left join TiemposDB.CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha where t.IdSorteo = ? group by t.Fecha', [SorteoID], function (err, rows, fields) {
+        connection.query('SELECT t.Disponible, t.Fecha, IFNULL(sum(Monto),0) MontoJugado, (select Numero from  TiemposDB.GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM TiemposDB.SorteosDisponibles t left join TiemposDB.CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha where t.IdSorteo = ? group by t.Fecha', [SorteoID], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -399,7 +413,20 @@ connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ? );', addAmount, functio
     connection.end();
 });
 }
-
+exports.DisableSorteo = (IdSorteo, Fecha) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query('update TiemposDB.SorteosDisponibles set Disponible = !Disponible where IdSorteo = ? and Fecha = ?;',[IdSorteo, Fecha],  function (error, results, fields) {
+        if (error) throw error;
+        
+        connection.end();
+    });
+}
 exports.CreateSorteos = () =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -489,6 +516,26 @@ exports.GetWeeks = () => {
            resolve(rows);
           })
     })
+}
+exports.getSorteoById = (Id) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select * from TiemposDB.Sorteos where Id = ?', [Id], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    }) 
 }
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;

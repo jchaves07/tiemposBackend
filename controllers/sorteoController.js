@@ -1,4 +1,4 @@
-const { insertSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -13,7 +13,19 @@ exports.changeAvalaibleNumber = async (req, res) => {
     }
 
 }
-
+//editSorteo
+exports.editSorteo = async (req, res) =>{
+    const {Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga} = req.body
+    if(req.usuario){
+        console.log(req.usuario.idUsers)
+        editSorteo(Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga);
+        res.json({msg: "Sorteo agregado con exito", isSuccess: true})
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
 exports.agregarSorteo = async (req, res) =>{
     const {Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga} = req.body
     if(req.usuario){
@@ -91,7 +103,19 @@ exports.getLimiteSorteo = async (req, res) =>{
         res.sendStatus(401);
     }
 }
-
+//getSorteoById
+exports.getSorteoById = async (req, res) =>{
+    if(req.usuario){
+        const { id } = req.body;
+        getSorteoById(id).then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+} 
 exports.GetIdTicket = async (req, res) =>{
     if(req.usuario){
         const { id } = req.body;
@@ -116,7 +140,18 @@ exports.GetNumerosDisponibles = async (req, res) =>{
         res.sendStatus(401);
     }
 }
-//
+//DisableSorteo
+exports.DisableSorteo = async (req, res) =>{
+    if(req.usuario){
+        const { IdSorteo,Fecha  } = req.body;
+        DisableSorteo(IdSorteo, Fecha);
+        
+        res.json({msg: "Sorteo agregado con exito", isSuccess: true})
+    }
+    else{
+        res.sendStatus(401);
+    } 
+}
 exports.CompraNumeros = async (req, res) =>{
     if(req.usuario){
         const { numeros } = req.body;

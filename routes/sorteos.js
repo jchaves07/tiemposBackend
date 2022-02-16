@@ -16,5 +16,8 @@ router.post('/changeAvalaibleNumber', auth, sorteoController.changeAvalaibleNumb
 router.post('/GetIdTicket', auth, sorteoController.GetIdTicket);
 router.post('/GetNumerosDisponibles', auth, sorteoController.GetNumerosDisponibles);
 router.post('/cloneTicket', auth, sorteoController.cloneTicket);
- 
+router.post('/DisableSorteo', auth, sorteoController.DisableSorteo);
+router.post('/getSorteoById', auth, sorteoController.getSorteoById);
+router.post('/editSorteo', auth, sorteoController.editSorteo);
+
 module.exports = router;

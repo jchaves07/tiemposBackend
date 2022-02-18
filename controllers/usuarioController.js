@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+const { insertNewUser, cambiarpass, getUserById, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
     const {  username, password, type, agentParent } = req.body
     //crear nuevo usuario 
@@ -9,7 +9,13 @@ exports.nuevoUsuario = async (req, res) => {
     insertNewUser(username, encryptedPassword, type, agentParent);
     res.sendStatus(200);
 }
-
+exports.cambiarpass = async (req, res) => {
+    const {  id, password,  } = req.body
+    const salt = await bcrypt.genSalt(10);
+    let encryptedPassword = await bcrypt.hash(password, salt);
+    cambiarpass(id, encryptedPassword);
+    res.sendStatus(200);
+}
 exports.ObtenerSaldo = async (req, res) =>{
     if(req.usuario){
         getCurrentBalance(req.usuario.idUsers).then(response=>{
@@ -86,6 +92,18 @@ exports.getUserMovements = async (req,res) =>{
 exports.ObtenerUsuarios = async (req, res) =>{
     if(req.usuario){
         getUserList().then(response =>{
+            res.json(response)
+        })
+    }
+    else{
+        res.sendStatus(401);
+    }
+    
+}
+exports.ObtenerUsuario = async (req, res) =>{
+    if(req.usuario){
+        const {idUser} = req.body;
+        getUserById(idUser).then(response =>{
             res.json(response)
         })
     }

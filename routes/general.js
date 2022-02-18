@@ -2,12 +2,12 @@ const express = require('express');
 const router = express.Router();
 const generalController = require('../controllers/generalController');
 const auth = require('../middleware/auth');
+const validateSessionReq = require('../middleware/validateSessionReq');
 
-
-router.get('/Sorteos', auth, generalController.getSorteos)
+router.get('/Sorteos', validateSessionReq, auth, generalController.getSorteos)
 router.post('/sendmail', generalController.sendMail);
-router.post('/ReporteSemanal', auth, generalController.ReporteSemanal);
-router.get('/getSorteosDropdown', auth, generalController.getSorteosDropdown);
-router.get('/GetWeeks', auth, generalController.GetWeeks);
+router.post('/ReporteSemanal', validateSessionReq, auth, generalController.ReporteSemanal);
+router.get('/getSorteosDropdown',validateSessionReq, auth, generalController.getSorteosDropdown);
+router.get('/GetWeeks', validateSessionReq, auth, generalController.GetWeeks);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../variables.env' });
 const mysql = require('mysql');
-
+const jwt = require('jsonwebtoken');
 
 ///update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = 7  and Number = 2 and Fecha = '2022-02-07'
 exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
@@ -13,6 +13,57 @@ exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
     connection.connect();
     var pos = [ IdSorteo, numb, Fecha ];
     var query = connection.query('update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+        connection.end();
+    });
+}
+exports.getsavedToken = (Id) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT CurrentToken FROM TiemposDB.Users where idUsers = ?;', [Id], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    }) 
+}
+//
+function saveToken (id, token) {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    var query = connection.query(`UPDATE Users SET CurrentToken= ${token ? `'${token}'` : "null" }  where idUsers = ${id}`, function (error, results, fields) {
+        if (error) throw error;
+        // Neat!
+        connection.end();
+    });
+}
+//cambiarpass
+exports.cambiarpass = (id, Password) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    var userEdit = { Password, id };
+    var query = connection.query(`UPDATE Users SET Password= '${Password}' where idUsers = ${id}`, function (error, results, fields) {
         if (error) throw error;
         // Neat!
         connection.end();
@@ -234,6 +285,26 @@ connection.query('CALL `TiemposDB`.`BuyNumber`(? , ? , ? , ? , ?, ? );', buyNumb
     connection.end();
 });
 }
+exports.getUserById = (id) =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('select * from TiemposDB.VW_UserList where IdUsers = ?', [id], function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    })
+}
+
 exports.getUserList = () =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -427,6 +498,36 @@ exports.DisableSorteo = (IdSorteo, Fecha) => {
         connection.end();
     });
 }
+exports.validaTokens = () =>{
+    //SELECT CurrentToken FROM TiemposDB.Users where CurrentToken is not null;
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query('SELECT CurrentToken FROM TiemposDB.Users where CurrentToken is not null;', function (err, rows, fields) {
+        if (err){
+            console.log(err)
+            connection.end();
+            
+        }
+        connection.end();
+        rows.map(item=>{
+            
+                jwt.verify(item.CurrentToken, process.env.SECRET, function(err, decoded){
+                    const dec = jwt.decode(item.CurrentToken)
+                    console.log({ msg: 'Token', dec });
+                   // saveToken(dec.idUsers, null)
+                }) 
+            
+           
+            
+        })
+      
+      })
+}
 exports.CreateSorteos = () =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -543,3 +644,4 @@ exports.getCurrentBalance = getCurrentBalance;
 exports.getSorteos = getSorteos;
 exports.insertSorteo = insertSorteo;
 exports.getLimiteSorteo = getLimiteSorteo;
+exports.saveToken = saveToken;

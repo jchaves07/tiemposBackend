@@ -1,9 +1,14 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { getUserByUsername } = require('../config/db');
+const { getUserByUsername, saveToken } = require('../config/db');
 require('dotenv').config({ path: 'variables.env' })
 exports.authUser = async (req, res, next) => {
-    const { username, password } = req.body;
+    console.log("second", req.error)
+    if(req.error){
+        res.send({ msg: req.error, error: "300" }); 
+    }
+    else{
+        const { username, password } = req.body;
     //obtiene user de base de datos
     getUserByUsername(username).then(response => {
         //valida password 
@@ -14,7 +19,8 @@ exports.authUser = async (req, res, next) => {
                 Username: response.Username,
                 Type: response.Type,
                 AgentParent: response.AgentParent
-            }, process.env.SECRET, { expiresIn: '10h' });
+            }, process.env.SECRET, { expiresIn: '15m' });
+            saveToken(response.idUsers, token);
             res.send({ token });
         }
         else {
@@ -22,6 +28,8 @@ exports.authUser = async (req, res, next) => {
             next();
         }
     });
+    }
+    
 
 
 

@@ -3,12 +3,16 @@ const cors = require('cors');
 const http = require('http');
 const schedule = require('node-schedule');
 const { application } = require('express');
-const { CreateSorteos } = require('./config/db');
+const { CreateSorteos, validaTokens } = require('./config/db');
 const app = express();
 const server = http.createServer(app);
 
 const job = schedule.scheduleJob('29 23 * * *', function(){
   CreateSorteos();
+  console.log('Ejecucion de creacion de sorteos');
+});
+const job2 = schedule.scheduleJob('1 * * * * *', function(){
+  validaTokens();
   console.log('Ejecucion de creacion de sorteos');
 });
 //puerto de la app

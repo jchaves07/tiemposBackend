@@ -41,7 +41,6 @@ exports.GetWeeks = async (req, res) =>{
     if(req.usuario){
 
         GetWeeks().then(response=>{
-            console.log(response)
             res.json(response)
         });
     }

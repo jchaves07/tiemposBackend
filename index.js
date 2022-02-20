@@ -9,11 +9,9 @@ const server = http.createServer(app);
 
 const job = schedule.scheduleJob('29 23 * * *', function(){
   CreateSorteos();
-  console.log('Ejecucion de creacion de sorteos');
 });
 const job2 = schedule.scheduleJob('1 * * * * *', function(){
   validaTokens();
-  console.log('Ejecucion de creacion de sorteos');
 });
 //puerto de la app
 const port = process.env.PORT || 4000;

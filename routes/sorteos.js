@@ -19,5 +19,9 @@ router.post('/cloneTicket', validateSessionReq, auth, sorteoController.cloneTick
 router.post('/DisableSorteo', validateSessionReq, auth, sorteoController.DisableSorteo);
 router.post('/getSorteoById', validateSessionReq, auth, sorteoController.getSorteoById);
 router.post('/editSorteo', validateSessionReq, auth, sorteoController.editSorteo);
-
+router.post('/GetLimiteSorteoPorUser', validateSessionReq, auth, sorteoController.GetLimiteSorteoPorUser);
+router.post('/deleteLimites', validateSessionReq, auth, sorteoController.deleteLimites);
+router.post('/updateLimitesPorUsuario', validateSessionReq, auth, sorteoController.updateLimitesPorUsuario);
+router.post('/deleteLimitesPorSorteo', validateSessionReq, auth, sorteoController.deleteLimitesPorSorteo);
+router.post('/InsertLimitePorSorteo', validateSessionReq, auth, sorteoController.InsertLimitePorSorteo);
 module.exports = router;

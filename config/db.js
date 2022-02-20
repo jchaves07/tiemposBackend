@@ -80,7 +80,6 @@ const insertNewUser = (Username, Password, Type, AgentParent) => {
     var userAdd = { Username, Password, Type, AgentParent };
     var query = connection.query('INSERT INTO Users SET ?', userAdd, function (error, results, fields) {
         if (error) throw error;
-        // Neat!
         connection.end();
     });
 }
@@ -241,8 +240,61 @@ const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, Pa
         connection.end();
     });
 }
-
-//
+exports.InsertLimitePorSorteo = ( sorteoId, item ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    let limitAdd = {Numero: Number(item.label), Monto: Number(item.value), SorteoId: sorteoId};
+    connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
+exports.InsertLimitePorUsuario = ( userId, item ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    let limitAdd = {UserId: userId, Numero: Number(item.label), Monto: Number(item.value)};
+    connection.query('INSERT INTO TiemposDB.LimitePorUsuario SET ?', limitAdd, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
+exports.deleteLimitesPorSorteo = ( sorteoId ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query('DELETE FROM TiemposDB.LimiteGeneralSorteos where SorteoId = ?', [sorteoId], function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
+exports.deleteLimites = ( userId ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query('DELETE FROM TiemposDB.LimitePorUsuario where UserId = ?', [userId], function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
+//select * from TiemposDB.LimitePorUsuario where UserId = ?
 exports.VentasPorNumero = (IdSorteo , Fecha) =>{
 
     return new Promise((resolve, reject) =>{
@@ -519,7 +571,7 @@ exports.validaTokens = () =>{
                 jwt.verify(item.CurrentToken, process.env.SECRET, function(err, decoded){
                     const dec = jwt.decode(item.CurrentToken)
                     console.log({ msg: 'Token', dec });
-                   // saveToken(dec.idUsers, null)
+                    saveToken(dec.idUsers, null)
                 }) 
             
            
@@ -537,6 +589,20 @@ exports.CreateSorteos = () =>{
 })
 connection.connect();
 connection.query('CALL `TiemposDB`.`CreateSorteos`();',  function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
+}
+exports.addBaseUserLimit = () =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect();
+connection.query('CALL `TiemposDB`.`addBaseUserLimit`();',  function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -637,6 +703,28 @@ exports.getSorteoById = (Id) => {
            resolve(rows[0]);
           })
     }) 
+}
+exports.getLimiteSorteoPorUser = (userId) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        console.warn("FRFRFR")
+        connection.connect(); 
+        connection.query(`SELECT Numero, Monto, UserId FROM TiemposDB.LimitePorUsuario where UserId = ${userId}`, function (err, rows, fields) {
+            if (err){
+                console.warn(err)
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
 }
 exports.insertNewUser = insertNewUser;
 exports.getUserByUsername = getUserByUsername;

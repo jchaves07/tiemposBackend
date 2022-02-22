@@ -1,4 +1,4 @@
-const { insertSorteo, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, ValidaCompraNumero, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -212,6 +212,21 @@ exports.DisableSorteo = async (req, res) =>{
     else{
         res.sendStatus(401);
     } 
+}
+exports.ValidaCompraNumeros = async (req, res) =>{
+    if(req.usuario){
+        const { numeros } = req.body;
+        numeros.map(item=>{
+            const {IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket} = item;
+            const result = ValidaCompraNumero(IdSorteo , Fecha , req.usuario.idUsers, Numero , Monto, IdTicket).then(response=>{
+                res.json(response)
+            });
+        }) 
+        
+    } 
+    else{
+        res.sendStatus(401);
+    }
 }
 exports.CompraNumeros = async (req, res) =>{
     if(req.usuario){

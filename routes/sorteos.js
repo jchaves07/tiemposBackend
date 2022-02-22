@@ -8,6 +8,7 @@ const validateSessionReq = require('../middleware/validateSessionReq');
 router.post('/Agregar', validateSessionReq, auth, sorteoController.agregarSorteo);
 router.post('/LimitesPorSorteo', validateSessionReq, auth, sorteoController.getLimiteSorteo);
 router.post('/CompraNumeros', validateSessionReq, auth, sorteoController.CompraNumeros);
+router.post('/ValidaCompraNumeros', validateSessionReq, auth, sorteoController.ValidaCompraNumeros);
 router.post('/getSorteosBySorteoID', validateSessionReq, auth, sorteoController.GetSorteosBySorteoID);
 router.post('/setGanador', validateSessionReq, auth, sorteoController.SetGanador);
 router.post('/GetSorteoName', validateSessionReq, auth, sorteoController.GetSorteoName);

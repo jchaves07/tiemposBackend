@@ -232,10 +232,15 @@ const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, Pa
     connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
         if (error) throw error;
         for (let index = 0; index < 100; index++) {
+            console.log('xxxxxxxx')
             let limitAdd = {Numero: index, Monto: 0, SorteoId: results.insertId};
-            connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (error, results, fields) {
+            connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (er, results, fields) {
+                if (er) {
+                    console.log(er)
+                }
             })
         }
+        CreateSorteos();
         connection.end();
     });
 }
@@ -320,7 +325,29 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
 
 }
 
-
+//
+exports.ValidaCompraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>{
+    return new Promise((resolve, reject) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect(); 
+var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket ];
+connection.query('CALL `TiemposDB`.`CheckBuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
+    if (error){
+        console.log(error)
+        connection.end();
+        reject(error.sqlMessage)
+    }
+    connection.end();
+    console.log(results)
+   resolve(results[0]);
+});
+})
+}
 exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -376,7 +403,7 @@ exports.getUserList = () =>{
     })
 }
 exports.getSorteosBySorteoID = SorteoID =>{
-   
+    
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
@@ -579,7 +606,7 @@ exports.validaTokens = () =>{
       
       })
 }
-exports.CreateSorteos = () =>{
+const CreateSorteos = () =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -732,3 +759,4 @@ exports.getSorteos = getSorteos;
 exports.insertSorteo = insertSorteo;
 exports.getLimiteSorteo = getLimiteSorteo;
 exports.saveToken = saveToken;
+exports.CreateSorteos = CreateSorteos;

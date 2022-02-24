@@ -4,7 +4,11 @@ const router = express.Router();
 const sorteoController = require('../controllers/sorteoController');
 const auth = require('../middleware/auth');
 const validateSessionReq = require('../middleware/validateSessionReq');
-
+const cors = require('cors');
+var corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200 // For legacy browser support
+  }
 router.post('/Agregar', validateSessionReq, auth, sorteoController.agregarSorteo);
 router.post('/LimitesPorSorteo', validateSessionReq, auth, sorteoController.getLimiteSorteo);
 router.post('/CompraNumeros', validateSessionReq, auth, sorteoController.CompraNumeros);
@@ -15,7 +19,7 @@ router.post('/GetSorteoName', validateSessionReq, auth, sorteoController.GetSort
 router.post('/VentasPorNumero', validateSessionReq, auth, sorteoController.VentasPorNumero);
 router.post('/changeAvalaibleNumber', validateSessionReq, auth, sorteoController.changeAvalaibleNumber);
 router.post('/GetIdTicket', validateSessionReq, auth, sorteoController.GetIdTicket);
-router.post('/GetNumerosDisponibles', validateSessionReq, auth, sorteoController.GetNumerosDisponibles);
+router.post('/GetNumerosDisponibles',cors(corsOptions), validateSessionReq, auth, sorteoController.GetNumerosDisponibles);
 router.post('/cloneTicket', validateSessionReq, auth, sorteoController.cloneTicket);
 router.post('/DisableSorteo', validateSessionReq, auth, sorteoController.DisableSorteo);
 router.post('/getSorteoById', validateSessionReq, auth, sorteoController.getSorteoById);

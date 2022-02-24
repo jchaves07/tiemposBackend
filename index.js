@@ -15,17 +15,17 @@ const job2 = schedule.scheduleJob('1 * * * * *', function(){
 });
 //puerto de la app
 const port = process.env.PORT || 4000;
-app.use(cors())
+var corsOptions = {
+  origin: '*',
+  optionsSuccessStatus: 200 // For legacy browser support
+}
 
+app.use(cors(corsOptions))
 //habilitar leer valores de body
 app.use(express.json());
-app.options('*', cors())
 app.use('/api/users', require('./routes/usuarios'));
-app.options('*', cors())
 app.use('/api/auth', require('./routes/auth'));
-app.options('*', cors())
 app.use('/api/general', require('./routes/general'));
-app.options('*', cors())
 app.use('/api/sorteos', require('./routes/sorteos'));
 
 

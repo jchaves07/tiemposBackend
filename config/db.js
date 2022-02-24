@@ -444,7 +444,7 @@ exports.GetNumerosDisponibles = (SorteoID, Fecha) =>{
     })
 }
 //select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = 0
-exports.jerarquiaUsuarioParent = Type =>{
+exports.jerarquiaUsuarioParent = (Type, AgentParent) =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
@@ -453,7 +453,7 @@ exports.jerarquiaUsuarioParent = Type =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ?', [Type], function (err, rows, fields) {
+        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type} and AgentParent = ${AgentParent} `, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

@@ -42,9 +42,9 @@ exports.jerarquiaUsuarioByAgentParent = async (req, res) =>{
     }
 }
 exports.jerarquiaUsuarioParent = async (req, res) =>{
-    const {Type} = req.body;
+    const {Type, AgentParent} = req.body;
     if(req.usuario){
-        jerarquiaUsuarioParent(Type).then(response=>{
+        jerarquiaUsuarioParent(Type, AgentParent).then(response=>{
             res.json(response)
         });
        

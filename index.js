@@ -21,8 +21,11 @@ app.use(cors())
 app.use(express.json());
 app.options('*', cors())
 app.use('/api/users', require('./routes/usuarios'));
+app.options('*', cors())
 app.use('/api/auth', require('./routes/auth'));
+app.options('*', cors())
 app.use('/api/general', require('./routes/general'));
+app.options('*', cors())
 app.use('/api/sorteos', require('./routes/sorteos'));
 
 

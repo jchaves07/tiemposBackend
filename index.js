@@ -15,14 +15,11 @@ const job2 = schedule.scheduleJob('1 * * * * *', function(){
 });
 //puerto de la app
 const port = process.env.PORT || 4000;
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(cors())
+
 //habilitar leer valores de body
 app.use(express.json());
-//Routes
+app.options('*', cors())
 app.use('/api/users', require('./routes/usuarios'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/general', require('./routes/general'));

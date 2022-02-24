@@ -15,23 +15,18 @@ const job2 = schedule.scheduleJob('1 * * * * *', function(){
 });
 //puerto de la app
 const port = process.env.PORT || 4000;
-var corsOptions = {
-  origin: '*',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'https://chat.crpyme.com');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
-
-})
+});
 //habilitar leer valores de body
 app.use(express.json());
 //Routes
-app.use('/api/users',cors(corsOptions), require('./routes/usuarios'));
-app.use('/api/auth', cors(corsOptions), require('./routes/auth'));
-app.use('/api/general', cors(corsOptions), require('./routes/general'));
-app.use('/api/sorteos', cors(corsOptions), require('./routes/sorteos'));
+app.use('/api/users', require('./routes/usuarios'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/general', require('./routes/general'));
+app.use('/api/sorteos', require('./routes/sorteos'));
 
 
 

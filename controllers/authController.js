@@ -18,6 +18,7 @@ exports.authUser = async (req, res, next) => {
                 idUsers: response.idUsers,
                 Username: response.Username,
                 Type: response.Type,
+                Fullname: response.Fullname,
                 AgentParent: response.AgentParent
             }, process.env.SECRET, { expiresIn: '15m' });
             saveToken(response.idUsers, token);

@@ -69,7 +69,7 @@ exports.cambiarpass = (id, Password) => {
         connection.end();
     });
 }
-const insertNewUser = (Username, Password, Type, AgentParent) => {
+const insertNewUser = (Username, Fullname, Password, Type, AgentParent) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -77,7 +77,8 @@ const insertNewUser = (Username, Password, Type, AgentParent) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    var userAdd = { Username, Password, Type, AgentParent };
+    var userAdd = { Fullname,Username, Password, Type, AgentParent };
+    console.log(userAdd)
     var query = connection.query('INSERT INTO Users SET ?', userAdd, function (error, results, fields) {
         if (error) throw error;
         connection.end();
@@ -114,7 +115,7 @@ const getUserByUsername = (Username) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT idUsers, Username, Password, Type, AgentParent FROM TiemposDB.Users where Username = ?', [Username], function (err, rows, fields) {
+        connection.query('SELECT idUsers, Username, Fullname, Password, Type, AgentParent FROM TiemposDB.Users where Username = ?', [Username], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

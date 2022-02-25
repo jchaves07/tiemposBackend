@@ -1,12 +1,12 @@
 const bcrypt = require('bcrypt');
 const { insertNewUser, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
-    const {  username, password, type, agentParent } = req.body
+    const {  username,fullname, password, type, agentParent } = req.body
     //crear nuevo usuario 
 
     const salt = await bcrypt.genSalt(10);
     let encryptedPassword = await bcrypt.hash(password, salt);
-    insertNewUser(username, encryptedPassword, type, agentParent);
+    insertNewUser(username, fullname, encryptedPassword, type, agentParent);
     addBaseUserLimit();
     res.sendStatus(200);
 }

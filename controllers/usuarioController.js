@@ -92,7 +92,8 @@ exports.getUserMovements = async (req,res) =>{
 }
 exports.ObtenerUsuarios = async (req, res) =>{
     if(req.usuario){
-        getUserList().then(response =>{
+        req.usuario
+        getUserList(req.usuario.Type < 1 ? -1 : req.usuario.idUsers).then(response =>{
             res.json(response)
         })
     }

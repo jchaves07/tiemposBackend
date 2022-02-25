@@ -383,7 +383,7 @@ exports.getUserById = (id) =>{
     })
 }
 
-exports.getUserList = () =>{
+exports.getUserList = (id) =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
@@ -392,7 +392,7 @@ exports.getUserList = () =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from TiemposDB.VW_UserList', function (err, rows, fields) {
+        connection.query(`select  IdUsers, Username, TypeId, Type, AgentParentId, AgentParentUsername, TypeAgentParent,  TypeAgentParentId from    (select * from TiemposDB.VW_UserList         order by AgentParentId, IdUsers) products_sorted,        (select @pv := '${id}') initialisation where   find_in_set(IFNULL(AgentParentId, -1), @pv) and     length(@pv := concat(@pv, ',', IdUsers)) ;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

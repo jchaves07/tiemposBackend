@@ -537,7 +537,7 @@ exports.getUserMovements = UserId =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT * FROM VW_Movements where UserId = ?', [UserId], function (err, rows, fields) {
+        connection.query(`SELECT  IdMov, Amount, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_Movements b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_Movements b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_Movements a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -639,13 +639,13 @@ exports.setGanador = (IdSorteo, Fecha, Numero) => {
     // 
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
-        user: process.env.DB_USER,
+        user: process.env.DB_USER, 
         password: process.env.DB_PASSWORD,
         database: process.env.DB_DATABASE
     })
     connection.connect();
     
-    var addWinner = [IdSorteo, Fecha, Numero];
+    var addWinner = [IdSorteo, Fecha, Numero]; 
 connection.query('CALL `TiemposDB`.`DeclaraGanador`(? , ? , ? );', addWinner, function (error, results, fields) {
     if (error) throw error;
     

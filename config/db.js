@@ -135,7 +135,8 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1)`, function (err, rows, fields) {
+        console.warn(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1)`)
+        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -348,6 +349,38 @@ connection.query('CALL `TiemposDB`.`CheckBuyNumber`(? , ? , ? , ? , ?, ? );', bu
    resolve(results[0]);
 });
 })
+}
+//revertSorteo IdSorteo INT, IN Fecha
+exports.revertSorteo = (IdSorteo, Fecha) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect();
+var revertBuyNumber = [  IdSorteo, Fecha ];
+connection.query('CALL `TiemposDB`.`revertSorteo`(?, ?);', revertBuyNumber, function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
+}
+
+exports.revertBuy = (IdMov) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect();
+var revertBuyNumber = [  IdMov ];
+connection.query('CALL `TiemposDB`.`revertNumber`(?);', revertBuyNumber, function (error, results, fields) {
+    if (error) throw error;
+    
+    connection.end();
+});
 }
 exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>{
     const connection = mysql.createConnection({

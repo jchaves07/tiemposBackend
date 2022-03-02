@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+const { insertNewUser, revertBuy, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
     const {  username,fullname, password, type, agentParent } = req.body
     //crear nuevo usuario 
@@ -113,6 +113,33 @@ exports.ObtenerUsuario = async (req, res) =>{
         res.sendStatus(401);
     }
     
+}
+//revertSorteo
+exports.revertSorteo = async (req, res) =>{
+    if(req.usuario){
+      
+            const {IdSorteo, Fecha} = req.body;
+            revertSorteo(IdSorteo, Fecha);
+      
+        
+        res.json({msg: "Compra Numeros con exito", isSuccess: true})
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+exports.revertBuy = async (req, res) =>{
+    if(req.usuario){
+      
+            const {IdMov} = req.body;
+            revertBuy(IdMov);
+      
+        
+        res.json({msg: "Compra Numeros con exito", isSuccess: true})
+    }
+    else{
+        res.json(req.usuario);
+    }
 }
 exports.AgregaSaldo = async (req, res) =>{
     if(req.usuario){

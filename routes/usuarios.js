@@ -15,6 +15,8 @@ router.post('/jerarquiaUsuarioByAgentParent', validateSessionReq, auth, usuarioC
 router.post('/getUserMovementsByDateAndUser', validateSessionReq, auth, usuarioController.getUserMovementsByDateAndUser);
 router.post('/ObtenerUsuario', validateSessionReq, auth, usuarioController.ObtenerUsuario);
 router.post('/cambiarpass', validateSessionReq, auth, usuarioController.cambiarpass);
-//
+router.post('/revertBuy', validateSessionReq, auth, usuarioController.revertBuy);
+router.post('/revertSorteo', validateSessionReq, auth, usuarioController.revertSorteo);
+// 
 
 module.exports = router;

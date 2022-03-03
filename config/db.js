@@ -135,8 +135,8 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        console.warn(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1)`)
-        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`, function (err, rows, fields) {
+        console.warn(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`)
+        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

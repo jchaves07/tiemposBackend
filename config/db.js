@@ -136,7 +136,7 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
         })
         connection.connect();
         console.warn(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`)
-        connection.query(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`, function (err, rows, fields) {
+        connection.query(`select x.* from (select * from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(YEARWEEKS) YEARWEEKS from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -326,8 +326,28 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
 
 
 }
-
-//
+exports.resumenGranTotal = (IdUser, Fecha) =>{
+    return new Promise((resolve, reject) =>{
+    const connection = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+})
+connection.connect(); 
+var buyNumber = [IdUser, Fecha];
+connection.query('CALL `TiemposDB`.`resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
+    if (error){
+        console.log(error)
+        connection.end();
+        reject(error.sqlMessage)
+    }
+    connection.end();
+    console.log(results)
+   resolve(results[0]);
+});
+})
+}
 exports.ValidaCompraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>{
     return new Promise((resolve, reject) =>{
     const connection = mysql.createConnection({
@@ -581,7 +601,7 @@ exports.getUserMovements = UserId =>{
     })
 }
 
-exports.AgregaSaldo = (IdUser , PartentID , Amount) =>{
+exports.AgregaSaldo = (IdUser , PartentID , Amount, Comments) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -589,8 +609,8 @@ exports.AgregaSaldo = (IdUser , PartentID , Amount) =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-var addAmount = [  IdUser , PartentID , Amount ];
-connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ? );', addAmount, function (error, results, fields) {
+var addAmount = [  IdUser , PartentID , Amount, Comments ];
+connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ?, ? );', addAmount, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();

@@ -144,8 +144,8 @@ exports.revertBuy = async (req, res) =>{
 exports.AgregaSaldo = async (req, res) =>{
     if(req.usuario){
       
-            const {userId, Amount} = req.body;
-            AgregaSaldo(userId , req.usuario.idUsers, Amount);
+            const {userId, Amount, Comments} = req.body;
+            AgregaSaldo(userId , req.usuario.idUsers, Amount, Comments);
       
         
         res.json({msg: "Compra Numeros con exito", isSuccess: true})

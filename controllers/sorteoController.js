@@ -1,4 +1,4 @@
-const { insertSorteo, ValidaCompraNumero, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, ValidaCompraNumero, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -212,6 +212,18 @@ exports.DisableSorteo = async (req, res) =>{
     else{
         res.sendStatus(401);
     } 
+}
+//resumenGranTotal
+exports.resumenGranTotal = async (req, res) =>{
+    if(req.usuario){
+        const { IdUser , Fecha } = req.body;
+            resumenGranTotal(IdUser , Fecha).then(response=>{
+                res.json(response)
+            });
+    } 
+    else{
+        res.sendStatus(401);
+    }
 }
 exports.ValidaCompraNumeros = async (req, res) =>{
     if(req.usuario){

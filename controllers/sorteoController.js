@@ -1,4 +1,4 @@
-const { insertSorteo, ValidaCompraNumero, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, ValidaCompraNumero, ModificarMontoMinimo, GetMontoMinimoCompra, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -88,6 +88,19 @@ exports.agregarSorteo = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+exports.ModificarMontoMinimo = async (req, res) =>{
+    const {Monto} = req.body
+    if(req.usuario){
+        console.log(req.usuario.idUsers)
+        ModificarMontoMinimo(Monto);
+        res.json({msg: "Sorteo agregado con exito", isSuccess: true})
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
+
 //
 exports.cloneTicket = async (req, res) =>{
     if(req.usuario){
@@ -213,7 +226,17 @@ exports.DisableSorteo = async (req, res) =>{
         res.sendStatus(401);
     } 
 }
-//resumenGranTotal
+//GetMontoMinimoCompra
+exports.GetMontoMinimoCompra = async (req, res) =>{
+    if(req.usuario){
+        GetMontoMinimoCompra().then(response=>{
+                res.json(response)
+            });
+    } 
+    else{
+        res.sendStatus(401);
+    }
+}
 exports.resumenGranTotal = async (req, res) =>{
     if(req.usuario){
         const { IdUser , Fecha } = req.body;

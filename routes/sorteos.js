@@ -8,7 +8,7 @@ const validateSessionReq = require('../middleware/validateSessionReq');
 router.post('/Agregar', validateSessionReq, auth, sorteoController.agregarSorteo);
 router.post('/LimitesPorSorteo', validateSessionReq, auth, sorteoController.getLimiteSorteo);
 router.post('/CompraNumeros', validateSessionReq, auth, sorteoController.CompraNumeros);
-router.post('/ValidaCompraNumeros', validateSessionReq, auth, sorteoController.ValidaCompraNumeros);
+router.post('/resumenGranTotal', validateSessionReq, auth, sorteoController.resumenGranTotal);
 router.post('/resumenGranTotal', validateSessionReq, auth, sorteoController.resumenGranTotal);
 router.post('/getSorteosBySorteoID', validateSessionReq, auth, sorteoController.GetSorteosBySorteoID);
 router.post('/setGanador', validateSessionReq, auth, sorteoController.SetGanador);
@@ -26,4 +26,9 @@ router.post('/deleteLimites', validateSessionReq, auth, sorteoController.deleteL
 router.post('/updateLimitesPorUsuario', validateSessionReq, auth, sorteoController.updateLimitesPorUsuario);
 router.post('/deleteLimitesPorSorteo', validateSessionReq, auth, sorteoController.deleteLimitesPorSorteo);
 router.post('/InsertLimitePorSorteo', validateSessionReq, auth, sorteoController.InsertLimitePorSorteo);
+router.post('/GetMontoMinimoCompra', validateSessionReq, auth, sorteoController.GetMontoMinimoCompra);
+router.post('/ModificarMontoMinimo', validateSessionReq, auth, sorteoController.ModificarMontoMinimo);
+
+//GetMontoMinimoCompra
 module.exports = router;
+

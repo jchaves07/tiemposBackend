@@ -437,6 +437,27 @@ exports.getUserById = (id) =>{
     })
 }
 
+exports.GetMontoMinimoCompra = () =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query('SELECT * FROM TiemposDB.MontoMinimoCompra', function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    })
+}
+//SELECT * FROM TiemposDB.MontoMinimoCompra
+
 exports.getUserList = (id) =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -625,6 +646,20 @@ exports.DisableSorteo = (IdSorteo, Fecha) => {
     })
     connection.connect();
     connection.query('update TiemposDB.SorteosDisponibles set Disponible = !Disponible where IdSorteo = ? and Fecha = ?;',[IdSorteo, Fecha],  function (error, results, fields) {
+        if (error) throw error;
+        
+        connection.end();
+    });
+}
+exports.ModificarMontoMinimo = (Monto) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query('UPDATE TiemposDB.MontoMinimoCompra X SET X.MontoMinimoCompra = ?;',[Monto],  function (error, results, fields) {
         if (error) throw error;
         
         connection.end();

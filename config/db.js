@@ -371,7 +371,7 @@ connection.query('CALL `TiemposDB`.`CheckBuyNumber`(? , ? , ? , ? , ?, ? );', bu
 })
 }
 //revertSorteo IdSorteo INT, IN Fecha
-exports.revertSorteo = (IdSorteo, Fecha) =>{
+exports.revertSorteo = (IdSorteo, Fecha, Commentario) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -379,15 +379,16 @@ exports.revertSorteo = (IdSorteo, Fecha) =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-var revertBuyNumber = [  IdSorteo, Fecha ];
-connection.query('CALL `TiemposDB`.`revertSorteo`(?, ?);', revertBuyNumber, function (error, results, fields) {
+var revertBuyNumber = [  IdSorteo, Fecha, Commentario ];
+console.log(revertBuyNumber)
+connection.query('CALL `TiemposDB`.`revertSorteo`(?, ?, ?);', revertBuyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
 });
 }
 
-exports.revertBuy = (IdMov) =>{
+exports.revertBuy = (IdMov, comments) =>{
     const connection = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -395,8 +396,9 @@ exports.revertBuy = (IdMov) =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-var revertBuyNumber = [  IdMov ];
-connection.query('CALL `TiemposDB`.`revertNumber`(?);', revertBuyNumber, function (error, results, fields) {
+var revertBuyNumber = [  IdMov, comments ];
+console.warn(revertBuyNumber)
+connection.query('CALL `TiemposDB`.`revertNumber`(?, ?);', revertBuyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();

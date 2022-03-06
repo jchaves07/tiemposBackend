@@ -118,8 +118,8 @@ exports.ObtenerUsuario = async (req, res) =>{
 exports.revertSorteo = async (req, res) =>{
     if(req.usuario){
       
-            const {IdSorteo, Fecha} = req.body;
-            revertSorteo(IdSorteo, Fecha);
+            const {IdSorteo, Fecha, Commentario} = req.body;
+            revertSorteo(IdSorteo, Fecha, Commentario);
       
         
         res.json({msg: "Compra Numeros con exito", isSuccess: true})
@@ -131,8 +131,8 @@ exports.revertSorteo = async (req, res) =>{
 exports.revertBuy = async (req, res) =>{
     if(req.usuario){
       
-            const {IdMov} = req.body;
-            revertBuy(IdMov);
+            const {IdMov, comments} = req.body;
+            revertBuy(IdMov, comments);
       
         
         res.json({msg: "Compra Numeros con exito", isSuccess: true})

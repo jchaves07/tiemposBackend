@@ -135,7 +135,7 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        console.warn(`select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} or idUsers = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND YEARWEEKS < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc LIMIT 1`)
+        console.warn(`select x.* from (select * from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(YEARWEEKS) YEARWEEKS from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`)
         connection.query(`select x.* from (select * from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(YEARWEEKS) YEARWEEKS from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`, function (err, rows, fields) {
             if (err){
                 connection.end();
@@ -611,7 +611,7 @@ exports.getUserMovements = UserId =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`SELECT  IdMov, Amount, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_Movements b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_Movements b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_Movements a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
+        connection.query(`SELECT  AmountUnit, IdMov, Amount, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_MovementsRes a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

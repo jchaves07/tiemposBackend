@@ -332,16 +332,17 @@ exports.resumenGranTotal = (IdUser, Fecha) =>{
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
+    database: process.env.DB_DATABASE 
 })
 connection.connect(); 
-var buyNumber = [IdUser, Fecha];
+var buyNumber = [IdUser, Fecha]; 
+console.log(IdUser, Fecha)
 connection.query('CALL `TiemposDB`.`resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
     if (error){
         console.log(error)
         connection.end();
         reject(error.sqlMessage)
-    }
+    } 
     connection.end();
     console.log(results)
    resolve(results[0]);
@@ -593,7 +594,7 @@ exports.getUserMovementsByDateAndUser = (createdDate,UserId) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from TiemposDB.VW_Movements where Date(createdDate) = ? and UserId = ?', [createdDate, UserId], function (err, rows, fields) {
+        connection.query('select * from TiemposDB.VW_Movements where Date(createdDate) = ? and UserId = ? order by IdMov desc', [createdDate, UserId], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -613,7 +614,7 @@ exports.getUserMovements = UserId =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`SELECT  AmountUnit, IdMov, Amount, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_MovementsRes a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
+        connection.query(`SELECT  AmountUnit, IdMov, Amount, Comments, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_MovementsRes a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

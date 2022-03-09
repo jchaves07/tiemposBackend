@@ -17,6 +17,8 @@ router.post('/ObtenerUsuario', validateSessionReq, auth, usuarioController.Obten
 router.post('/cambiarpass', validateSessionReq, auth, usuarioController.cambiarpass);
 router.post('/revertBuy', validateSessionReq, auth, usuarioController.revertBuy);
 router.post('/revertSorteo', validateSessionReq, auth, usuarioController.revertSorteo);
-// 
+router.post('/getPermisos', validateSessionReq, auth, usuarioController.getPermisos);
+router.post('/UpdatePermisos', validateSessionReq, auth, usuarioController.UpdatePermisos);
+// getPermisos
 
 module.exports = router;

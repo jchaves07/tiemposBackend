@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser, revertBuy, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+const { insertNewUser, revertBuy, UpdatePermisos, getPermisos, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 exports.nuevoUsuario = async (req, res) => {
     const {  username,fullname, password, type, agentParent } = req.body
     //crear nuevo usuario 
@@ -92,7 +92,6 @@ exports.getUserMovements = async (req,res) =>{
 }
 exports.ObtenerUsuarios = async (req, res) =>{
     if(req.usuario){
-        req.usuario
         getUserList(req.usuario.Type < 1 ? -1 : req.usuario.idUsers).then(response =>{
             res.json(response)
         })
@@ -102,6 +101,19 @@ exports.ObtenerUsuarios = async (req, res) =>{
     }
     
 }
+exports.getPermisos = async (req, res) =>{
+    if(req.usuario){
+        const {idUser} = req.body;
+        getPermisos(idUser).then(response =>{
+            res.json(response)
+        })
+    }
+    else{
+        res.sendStatus(401);
+    }
+    
+}
+
 exports.ObtenerUsuario = async (req, res) =>{
     if(req.usuario){
         const {idUser} = req.body;
@@ -114,7 +126,20 @@ exports.ObtenerUsuario = async (req, res) =>{
     }
     
 }
-//revertSorteo
+//UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos )
+exports.UpdatePermisos = async (req, res) =>{
+    if(req.usuario){
+      
+            const {IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos} = req.body;
+            UpdatePermisos(IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos);
+      
+        
+        res.json({msg: "Compra Numeros con exito", isSuccess: true})
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
 exports.revertSorteo = async (req, res) =>{
     if(req.usuario){
       

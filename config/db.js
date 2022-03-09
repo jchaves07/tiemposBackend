@@ -115,7 +115,7 @@ const getUserByUsername = (Username) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT idUsers, Username, Fullname, Password, Type, AgentParent FROM TiemposDB.Users where Username = ?', [Username], function (err, rows, fields) {
+        connection.query('SELECT idUsers, Username, Fullname, Password, Type, AgentParent, P.*  FROM TiemposDB.Users U left join TiemposDB.Permisos P on P.IdUser = U.idUsers where Username = ?', [Username], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -126,7 +126,7 @@ const getUserByUsername = (Username) => {
     }) 
 }
 exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
-    //select * from VW_ReporteSaldos where AgentParent = 3
+
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
             host: process.env.DB_HOST,
@@ -188,6 +188,28 @@ const getSorteos = () => {
     })
    
 }
+exports.getPermisos = (IdUser) => {
+
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query(`SELECT * FROM TiemposDB.Permisos where IdUser = ${IdUser};`, function (err, rows, fields) {
+            if (err){
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows[0]);
+          })
+    })
+   
+}
+
 const getLimiteSorteo = (id) => {
 
     return new Promise((resolve, reject) =>{
@@ -222,6 +244,25 @@ exports.editSorteo = ( Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ,
         connection.end();
     });
 }
+//UPDATE TiemposDB.Permisos SET IdUser = IdUser, CambiarPassword = CambiarPassword,AgregarUsuario = AgregarUsuario, LimitesUsuario = LimitesUsuario, AgregarSaldo = AgregarSaldo, EditarSorteo = EditarSorteo, DeclaraGanador = DeclaraGanador, MontoMinimo = MontoMinimo, LimiteSorteo = LimiteSorteo WHERE IdUser = ;
+exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    console.log(DeclaraGanador)
+    connection.query(`UPDATE TiemposDB.Permisos SET Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
+
+
+
+
 const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -234,7 +275,6 @@ const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, Pa
     connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
         if (error) throw error;
         for (let index = 0; index < 100; index++) {
-            console.log('xxxxxxxx')
             let limitAdd = {Numero: index, Monto: 0, SorteoId: results.insertId};
             connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (er, results, fields) {
                 if (er) {
@@ -332,7 +372,7 @@ exports.resumenGranTotal = (IdUser, Fecha) =>{
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE 
+    database: process.env.DB_DATABASE  
 })
 connection.connect(); 
 var buyNumber = [IdUser, Fecha]; 
@@ -552,7 +592,7 @@ exports.jerarquiaUsuarioByAgentParent = AgentParent =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT idUsers, IFNULL(Fullname, Username) User, UT.Description Type, UT.Id IdType FROM TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type where AgentParent = ?', [AgentParent], function (err, rows, fields) {
+        connection.query('SELECT idUsers, IFNULL(Fullname, Username) User,Username, UT.Description Type, UT.Id IdType FROM TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type where AgentParent = ?', [AgentParent], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

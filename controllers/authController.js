@@ -27,6 +27,8 @@ exports.authUser = async (req, res, next) => {
                     MontoMinimo: response.MontoMinimo,
                     LimiteSorteo: response.LimiteSorteo,
                     Permisos: response.Permisos,
+                    AnularSorteo: response.AnularSorteo,
+                    AnularTicket: response.AnularTicket,
                     CambiarPassword: response.CambiarPassword,
 
                     AgentParent: response.AgentParent

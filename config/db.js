@@ -245,7 +245,7 @@ exports.editSorteo = ( Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ,
     });
 }
 //UPDATE TiemposDB.Permisos SET IdUser = IdUser, CambiarPassword = CambiarPassword,AgregarUsuario = AgregarUsuario, LimitesUsuario = LimitesUsuario, AgregarSaldo = AgregarSaldo, EditarSorteo = EditarSorteo, DeclaraGanador = DeclaraGanador, MontoMinimo = MontoMinimo, LimiteSorteo = LimiteSorteo WHERE IdUser = ;
-exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos ) => {
+exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos, AnularSorteo, AnularTicket ) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -254,7 +254,7 @@ exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuari
     })
     connection.connect();
     console.log(DeclaraGanador)
-    connection.query(`UPDATE TiemposDB.Permisos SET Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
+    connection.query(`UPDATE TiemposDB.Permisos SET AnularSorteo = ${AnularSorteo ? 1 : 0}, AnularTicket= ${AnularTicket ? 1 : 0}, Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });

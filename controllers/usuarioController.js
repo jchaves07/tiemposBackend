@@ -130,8 +130,8 @@ exports.ObtenerUsuario = async (req, res) =>{
 exports.UpdatePermisos = async (req, res) =>{
     if(req.usuario){
       
-            const {IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos} = req.body;
-            UpdatePermisos(IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos);
+            const {IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos, AnularSorteo, AnularTicket} = req.body;
+            UpdatePermisos(IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos, AnularSorteo, AnularTicket);
       
         
         res.json({msg: "Compra Numeros con exito", isSuccess: true})

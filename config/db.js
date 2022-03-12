@@ -377,7 +377,7 @@ exports.resumenGranTotal = (IdUser, Fecha) =>{
 connection.connect(); 
 var buyNumber = [IdUser, Fecha]; 
 console.log(IdUser, Fecha)
-connection.query('CALL `TiemposDB`.`resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
+connection.query('CALL `resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
     if (error){
         console.log(error)
         connection.end();
@@ -399,7 +399,7 @@ exports.ValidaCompraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTick
 })
 connection.connect(); 
 var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket ];
-connection.query('CALL `TiemposDB`.`CheckBuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
+connection.query('CALL `CheckBuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
     if (error){
         console.log(error)
         connection.end();
@@ -422,7 +422,7 @@ exports.revertSorteo = (IdSorteo, Fecha, Commentario) =>{
 connection.connect();
 var revertBuyNumber = [  IdSorteo, Fecha, Commentario ];
 console.log(revertBuyNumber)
-connection.query('CALL `TiemposDB`.`revertSorteo`(?, ?, ?);', revertBuyNumber, function (error, results, fields) {
+connection.query('CALL `revertSorteo`(?, ?, ?);', revertBuyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -439,7 +439,7 @@ exports.revertBuy = (IdMov, comments) =>{
 connection.connect();
 var revertBuyNumber = [  IdMov, comments ];
 console.warn(revertBuyNumber)
-connection.query('CALL `TiemposDB`.`revertNumber`(?, ?);', revertBuyNumber, function (error, results, fields) {
+connection.query('CALL `revertNumber`(?, ?);', revertBuyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -454,7 +454,7 @@ exports.compraNumero = (IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket) =>
 })
 connection.connect();
 var buyNumber = [  IdSorteo , Fecha , IdUser , Numero , Monto, IdTicket ];
-connection.query('CALL `TiemposDB`.`BuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
+connection.query('CALL `BuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -674,7 +674,7 @@ exports.AgregaSaldo = (IdUser , PartentID , Amount, Comments) =>{
 })
 connection.connect();
 var addAmount = [  IdUser , PartentID , Amount, Comments ];
-connection.query('CALL `TiemposDB`.`AddAmount`(? , ? , ?, ? );', addAmount, function (error, results, fields) {
+connection.query('CALL `AddAmount`(? , ? , ?, ? );', addAmount, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -746,7 +746,7 @@ const CreateSorteos = () =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-connection.query('CALL `TiemposDB`.`CreateSorteos`();',  function (error, results, fields) {
+connection.query('CALL `CreateSorteos`();',  function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -760,7 +760,7 @@ exports.addBaseUserLimit = () =>{
     database: process.env.DB_DATABASE
 })
 connection.connect();
-connection.query('CALL `TiemposDB`.`addBaseUserLimit`();',  function (error, results, fields) {
+connection.query('CALL `addBaseUserLimit`();',  function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -777,7 +777,7 @@ exports.setGanador = (IdSorteo, Fecha, Numero) => {
     connection.connect();
     
     var addWinner = [IdSorteo, Fecha, Numero]; 
-connection.query('CALL `TiemposDB`.`DeclaraGanador`(? , ? , ? );', addWinner, function (error, results, fields) {
+connection.query('CALL `DeclaraGanador`(? , ? , ? );', addWinner, function (error, results, fields) {
     if (error) throw error;
     
     connection.end();
@@ -812,7 +812,7 @@ exports.GetIdTicket = () => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('CALL `TiemposDB`.`CreateTicketNumber`();', function (err, rows, fields) {
+        connection.query('CALL `CreateTicketNumber`();', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -832,7 +832,7 @@ exports.GetWeeks = () => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('CALL `TiemposDB`.`getWeek`();', function (err, rows, fields) {
+        connection.query('CALL `getWeek`();', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

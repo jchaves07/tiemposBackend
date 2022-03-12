@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../variables.env' });
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 
-///update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = 7  and Number = 2 and Fecha = '2022-02-07'
+///update NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = 7  and Number = 2 and Fecha = '2022-02-07'
 exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -12,7 +12,7 @@ exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
     })
     connection.connect();
     var pos = [ IdSorteo, numb, Fecha ];
-    var query = connection.query('update TiemposDB.NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
+    var query = connection.query('update NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
         if (error) throw error;
         // Neat!
         connection.end();
@@ -28,7 +28,7 @@ exports.getsavedToken = (Id) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT CurrentToken FROM TiemposDB.Users where idUsers = ?;', [Id], function (err, rows, fields) {
+        connection.query('SELECT CurrentToken FROM Users where idUsers = ?;', [Id], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -84,7 +84,7 @@ const insertNewUser = (Username, Fullname, Password, Type, AgentParent) => {
         connection.end();
     });
 }
-//select Name, HoraLimite from TiemposDB.Sorteos where Id = 6
+//select Name, HoraLimite from Sorteos where Id = 6
 exports.getSorteoName = (Id) => {
 
     return new Promise((resolve, reject) =>{
@@ -95,7 +95,7 @@ exports.getSorteoName = (Id) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select Name, HoraLimite from TiemposDB.Sorteos where Id = ?', [Id], function (err, rows, fields) {
+        connection.query('select Name, HoraLimite from Sorteos where Id = ?', [Id], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -115,7 +115,7 @@ const getUserByUsername = (Username) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT idUsers, Username, Fullname, Password, Type, AgentParent, P.*  FROM TiemposDB.Users U left join TiemposDB.Permisos P on P.IdUser = U.idUsers where Username = ?', [Username], function (err, rows, fields) {
+        connection.query('SELECT idUsers, Username, Fullname, Password, Type, AgentParent, P.*  FROM Users U left join Permisos P on P.IdUser = U.idUsers where Username = ?', [Username], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -135,8 +135,8 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        console.warn(`select x.* from (select * from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`)
-        connection.query(`select x.* from (select * from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x left join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from TiemposDB.VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS limit 1;`, function (err, rows, fields) {
+        console.warn(`select x.* from (select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`)
+        connection.query(`select x.* from (select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x left join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS limit 1;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -156,7 +156,7 @@ const getCurrentBalance = (UserId) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT IFNULL(sum(Amount*MovementAdd),0) Balance FROM TiemposDB.Movements mov inner join TiemposDB.MovementTypes mt on mt.Id = mov.Type where UserId = ?', [UserId], function (err, rows, fields) {
+        connection.query('SELECT IFNULL(sum(Amount*MovementAdd),0) Balance FROM Movements mov inner join MovementTypes mt on mt.Id = mov.Type where UserId = ?', [UserId], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -177,7 +177,7 @@ const getSorteos = () => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT id, Name, HoraLimite, isParlay, Paga FROM TiemposDB.Sorteos', function (err, rows, fields) {
+        connection.query('SELECT id, Name, HoraLimite, isParlay, Paga FROM Sorteos', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -198,7 +198,7 @@ exports.getPermisos = (IdUser) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`SELECT * FROM TiemposDB.Permisos where IdUser = ${IdUser};`, function (err, rows, fields) {
+        connection.query(`SELECT * FROM Permisos where IdUser = ${IdUser};`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -220,7 +220,7 @@ const getLimiteSorteo = (id) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT Numero, Monto, SorteoId FROM TiemposDB.LimiteGeneralSorteos where SorteoId = ?', [id], function (err, rows, fields) {
+        connection.query('SELECT Numero, Monto, SorteoId FROM LimiteGeneralSorteos where SorteoId = ?', [id], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -239,12 +239,12 @@ exports.editSorteo = ( Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ,
     })
     connection.connect();
 
-    connection.query(`update TiemposDB.Sorteos set Name = '${Name}', HoraLimite = '${HoraLimite}', ParleyL = ${ParleyL}, ParleyM = ${ParleyM}, ParleyK = ${ParleyK}, ParleyJ = ${ParleyJ}, ParleyV = ${ParleyV}, ParleyS = ${ParleyS}, ParleyD = ${ParleyD}, SorteoL = ${SorteoL}, SorteoM = ${SorteoM}, SorteoK = ${SorteoK}, SorteoJ = ${SorteoJ}, SorteoV = ${SorteoV}, SorteoS = ${SorteoS}, SorteoD = ${SorteoD}, Paga = ${Paga} where Id = ${Id}`, function (error, results, fields) {
+    connection.query(`update Sorteos set Name = '${Name}', HoraLimite = '${HoraLimite}', ParleyL = ${ParleyL}, ParleyM = ${ParleyM}, ParleyK = ${ParleyK}, ParleyJ = ${ParleyJ}, ParleyV = ${ParleyV}, ParleyS = ${ParleyS}, ParleyD = ${ParleyD}, SorteoL = ${SorteoL}, SorteoM = ${SorteoM}, SorteoK = ${SorteoK}, SorteoJ = ${SorteoJ}, SorteoV = ${SorteoV}, SorteoS = ${SorteoS}, SorteoD = ${SorteoD}, Paga = ${Paga} where Id = ${Id}`, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
 }
-//UPDATE TiemposDB.Permisos SET IdUser = IdUser, CambiarPassword = CambiarPassword,AgregarUsuario = AgregarUsuario, LimitesUsuario = LimitesUsuario, AgregarSaldo = AgregarSaldo, EditarSorteo = EditarSorteo, DeclaraGanador = DeclaraGanador, MontoMinimo = MontoMinimo, LimiteSorteo = LimiteSorteo WHERE IdUser = ;
+//UPDATE Permisos SET IdUser = IdUser, CambiarPassword = CambiarPassword,AgregarUsuario = AgregarUsuario, LimitesUsuario = LimitesUsuario, AgregarSaldo = AgregarSaldo, EditarSorteo = EditarSorteo, DeclaraGanador = DeclaraGanador, MontoMinimo = MontoMinimo, LimiteSorteo = LimiteSorteo WHERE IdUser = ;
 exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuario, AgregarSaldo, EditarSorteo, DeclaraGanador, MontoMinimo, LimiteSorteo, Permisos, AnularSorteo, AnularTicket ) => {
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
@@ -254,7 +254,7 @@ exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuari
     })
     connection.connect();
     console.log(DeclaraGanador)
-    connection.query(`UPDATE TiemposDB.Permisos SET AnularSorteo = ${AnularSorteo ? 1 : 0}, AnularTicket= ${AnularTicket ? 1 : 0}, Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
+    connection.query(`UPDATE Permisos SET AnularSorteo = ${AnularSorteo ? 1 : 0}, AnularTicket= ${AnularTicket ? 1 : 0}, Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
@@ -272,11 +272,11 @@ const insertSorteo = ( Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, Pa
     })
     connection.connect();
     var sorteoAdd = {  Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga };
-    connection.query('INSERT INTO TiemposDB.Sorteos SET ?', sorteoAdd, function (error, results, fields) {
+    connection.query('INSERT INTO Sorteos SET ?', sorteoAdd, function (error, results, fields) {
         if (error) throw error;
         for (let index = 0; index < 100; index++) {
             let limitAdd = {Numero: index, Monto: 0, SorteoId: results.insertId};
-            connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (er, results, fields) {
+            connection.query('INSERT INTO LimiteGeneralSorteos SET ?', limitAdd, function (er, results, fields) {
                 if (er) {
                     console.log(er)
                 }
@@ -295,7 +295,7 @@ exports.InsertLimitePorSorteo = ( sorteoId, item ) => {
     })
     connection.connect();
     let limitAdd = {Numero: Number(item.label), Monto: Number(item.value), SorteoId: sorteoId};
-    connection.query('INSERT INTO TiemposDB.LimiteGeneralSorteos SET ?', limitAdd, function (error, results, fields) {
+    connection.query('INSERT INTO LimiteGeneralSorteos SET ?', limitAdd, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
@@ -309,7 +309,7 @@ exports.InsertLimitePorUsuario = ( userId, item ) => {
     })
     connection.connect();
     let limitAdd = {UserId: userId, Numero: Number(item.label), Monto: Number(item.value)};
-    connection.query('INSERT INTO TiemposDB.LimitePorUsuario SET ?', limitAdd, function (error, results, fields) {
+    connection.query('INSERT INTO LimitePorUsuario SET ?', limitAdd, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
@@ -322,7 +322,7 @@ exports.deleteLimitesPorSorteo = ( sorteoId ) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    connection.query('DELETE FROM TiemposDB.LimiteGeneralSorteos where SorteoId = ?', [sorteoId], function (error, results, fields) {
+    connection.query('DELETE FROM LimiteGeneralSorteos where SorteoId = ?', [sorteoId], function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
@@ -335,12 +335,12 @@ exports.deleteLimites = ( userId ) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    connection.query('DELETE FROM TiemposDB.LimitePorUsuario where UserId = ?', [userId], function (error, results, fields) {
+    connection.query('DELETE FROM LimitePorUsuario where UserId = ?', [userId], function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
 }
-//select * from TiemposDB.LimitePorUsuario where UserId = ?
+//select * from LimitePorUsuario where UserId = ?
 exports.VentasPorNumero = (IdSorteo , Fecha) =>{
 
     return new Promise((resolve, reject) =>{
@@ -352,7 +352,7 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
         })
         connection.connect();
         var filter = [  IdSorteo , Fecha ]; 
-        var sql = mysql.format('select Number, Sum(Monto) Monto, Fecha, Disponible from (SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo x left join TiemposDB.CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?) x group by Number, Fecha, Disponible', filter);
+        var sql = mysql.format('select Number, Sum(Monto) Monto, Fecha, Disponible from (SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM NumerosDisponiblesPorSorteo x left join CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?) x group by Number, Fecha, Disponible', filter);
         console.log(sql)
         connection.query(sql, function (error, results, fields) {
             if (error){
@@ -469,7 +469,7 @@ exports.getUserById = (id) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from TiemposDB.VW_UserList where IdUsers = ?', [id], function (err, rows, fields) {
+        connection.query('select * from VW_UserList where IdUsers = ?', [id], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -489,7 +489,7 @@ exports.GetMontoMinimoCompra = () =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT * FROM TiemposDB.MontoMinimoCompra', function (err, rows, fields) {
+        connection.query('SELECT * FROM MontoMinimoCompra', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -499,7 +499,7 @@ exports.GetMontoMinimoCompra = () =>{
           })
     })
 }
-//SELECT * FROM TiemposDB.MontoMinimoCompra
+//SELECT * FROM MontoMinimoCompra
 
 exports.getUserList = (id) =>{
     return new Promise((resolve, reject) =>{
@@ -510,7 +510,7 @@ exports.getUserList = (id) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`select  IdUsers,Fullname, Username, TypeId, Type, AgentParentId, AgentParentUsername, TypeAgentParent,  TypeAgentParentId from    (select * from TiemposDB.VW_UserList         order by AgentParentId, IdUsers) products_sorted,        (select @pv := '${id}') initialisation where   find_in_set(IFNULL(AgentParentId, -1), @pv) and     length(@pv := concat(@pv, ',', IdUsers)) ;`, function (err, rows, fields) {
+        connection.query(`select  IdUsers,Fullname, Username, TypeId, Type, AgentParentId, AgentParentUsername, TypeAgentParent,  TypeAgentParentId from    (select * from VW_UserList         order by AgentParentId, IdUsers) products_sorted,        (select @pv := '${id}') initialisation where   find_in_set(IFNULL(AgentParentId, -1), @pv) and     length(@pv := concat(@pv, ',', IdUsers)) ;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -530,7 +530,7 @@ exports.getSorteosBySorteoID = SorteoID =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT t.IdSorteo,  case when NumeroGanador is not null then TPNV.Monto * Paga else null end PagaPremio, Paga, t.Disponible, t.Fecha, IFNULL(sum(cn.Monto),0) MontoJugado, (select Numero from  TiemposDB.GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM TiemposDB.SorteosDisponibles t left join TiemposDB.CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha inner join TiemposDB.Sorteos SO on SO.Id = t.IdSorteo left join TiemposDB.TotalPorNumeroView TPNV on TPNV.IdSorteo = t.IdSorteo and t.Fecha = TPNV.Fecha and TPNV.NumeroGanador is not null where t.IdSorteo = ?  group by t.Fecha, Paga,case when NumeroGanador is not null then TPNV.Monto * Paga else null end, t.IdSorteo', [SorteoID], function (err, rows, fields) {
+        connection.query('SELECT t.IdSorteo,  case when NumeroGanador is not null then TPNV.Monto * Paga else null end PagaPremio, Paga, t.Disponible, t.Fecha, IFNULL(sum(cn.Monto),0) MontoJugado, (select Numero from  GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM SorteosDisponibles t left join CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha inner join Sorteos SO on SO.Id = t.IdSorteo left join TotalPorNumeroView TPNV on TPNV.IdSorteo = t.IdSorteo and t.Fecha = TPNV.Fecha and TPNV.NumeroGanador is not null where t.IdSorteo = ?  group by t.Fecha, Paga,case when NumeroGanador is not null then TPNV.Monto * Paga else null end, t.IdSorteo', [SorteoID], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -551,7 +551,7 @@ exports.GetNumerosDisponibles = (SorteoID, Fecha) =>{
         })
         connection.connect();
         var filter = [  SorteoID , Fecha ]; 
-        connection.query('SELECT Number, Disponible FROM TiemposDB.NumerosDisponiblesPorSorteo where IdSorteo = ? and Fecha = ?', filter, function (err, rows, fields) {
+        connection.query('SELECT Number, Disponible FROM NumerosDisponiblesPorSorteo where IdSorteo = ? and Fecha = ?', filter, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -561,7 +561,7 @@ exports.GetNumerosDisponibles = (SorteoID, Fecha) =>{
           })
     })
 }
-//select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = 0
+//select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = 0
 exports.jerarquiaUsuarioParent = (Type, AgentParent) =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -571,7 +571,7 @@ exports.jerarquiaUsuarioParent = (Type, AgentParent) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type} and AgentParent = ${AgentParent} `, function (err, rows, fields) {
+        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type} and AgentParent = ${AgentParent} `, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -592,7 +592,7 @@ exports.jerarquiaUsuarioByAgentParent = AgentParent =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT idUsers, IFNULL(Fullname, Username) User,Username, UT.Description Type, UT.Id IdType FROM TiemposDB.Users u inner join TiemposDB.UserTypes UT on UT.Id = u.Type where AgentParent = ?', [AgentParent], function (err, rows, fields) {
+        connection.query('SELECT idUsers, IFNULL(Fullname, Username) User,Username, UT.Description Type, UT.Id IdType FROM Users u inner join UserTypes UT on UT.Id = u.Type where AgentParent = ?', [AgentParent], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -613,7 +613,7 @@ exports.cloneTicket = IdTicket =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select Numero, Monto from TiemposDB.CompraNumeros	where IdTicket = ?', [IdTicket], function (err, rows, fields) {
+        connection.query('select Numero, Monto from CompraNumeros	where IdTicket = ?', [IdTicket], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -624,7 +624,7 @@ exports.cloneTicket = IdTicket =>{
     })
 }
 
-//select * from TiemposDB.VW_Movements where createdDate = ? and UserId = ?
+//select * from VW_Movements where createdDate = ? and UserId = ?
 exports.getUserMovementsByDateAndUser = (createdDate,UserId) =>{
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -634,7 +634,7 @@ exports.getUserMovementsByDateAndUser = (createdDate,UserId) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from TiemposDB.VW_Movements where Date(createdDate) = ? and UserId = ? order by IdMov desc', [createdDate, UserId], function (err, rows, fields) {
+        connection.query('select * from VW_Movements where Date(createdDate) = ? and UserId = ? order by IdMov desc', [createdDate, UserId], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -654,7 +654,7 @@ exports.getUserMovements = UserId =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`SELECT  AmountUnit, IdMov, Amount, Comments, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM TiemposDB.VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM TiemposDB.VW_MovementsRes a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
+        connection.query(`SELECT  AmountUnit, IdMov, Amount, Comments, UserId, Sorteo, Numero, Color, FechaSorteo, createdDate, case when Amount > 0 then Amount else 0 end credit, case when Amount < 0 then Amount else 0 end debit, IdTicket, COALESCE(((SELECT SUM(Amount) FROM VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount > 0) + (SELECT SUM(Amount) FROM VW_MovementsRes b WHERE b.IdMov <= a.IdMov AND UserId = '${UserId}' and Amount < 0)), 0) as balance, MovType FROM VW_MovementsRes a WHERE UserId = '${UserId}' ORDER BY IdMov DESC;`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -688,7 +688,7 @@ exports.DisableSorteo = (IdSorteo, Fecha) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    connection.query('update TiemposDB.SorteosDisponibles set Disponible = !Disponible where IdSorteo = ? and Fecha = ?;',[IdSorteo, Fecha],  function (error, results, fields) {
+    connection.query('update SorteosDisponibles set Disponible = !Disponible where IdSorteo = ? and Fecha = ?;',[IdSorteo, Fecha],  function (error, results, fields) {
         if (error) throw error;
         
         connection.end();
@@ -702,14 +702,14 @@ exports.ModificarMontoMinimo = (Monto) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    connection.query('UPDATE TiemposDB.MontoMinimoCompra X SET X.MontoMinimoCompra = ?;',[Monto],  function (error, results, fields) {
+    connection.query('UPDATE MontoMinimoCompra X SET X.MontoMinimoCompra = ?;',[Monto],  function (error, results, fields) {
         if (error) throw error;
         
         connection.end();
     });
 }
 exports.validaTokens = () =>{
-    //SELECT CurrentToken FROM TiemposDB.Users where CurrentToken is not null;
+    //SELECT CurrentToken FROM Users where CurrentToken is not null;
     const connection = mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -717,7 +717,7 @@ exports.validaTokens = () =>{
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    connection.query('SELECT CurrentToken FROM TiemposDB.Users where CurrentToken is not null;', function (err, rows, fields) {
+    connection.query('SELECT CurrentToken FROM Users where CurrentToken is not null;', function (err, rows, fields) {
         if (err){
             console.log(err)
             connection.end();
@@ -852,7 +852,7 @@ exports.getSorteoById = (Id) => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('select * from TiemposDB.Sorteos where Id = ?', [Id], function (err, rows, fields) {
+        connection.query('select * from Sorteos where Id = ?', [Id], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -873,7 +873,7 @@ exports.getLimiteSorteoPorUser = (userId) => {
         })
         console.warn("FRFRFR")
         connection.connect(); 
-        connection.query(`SELECT Numero, Monto, UserId FROM TiemposDB.LimitePorUsuario where UserId = ${userId}`, function (err, rows, fields) {
+        connection.query(`SELECT Numero, Monto, UserId FROM LimitePorUsuario where UserId = ${userId}`, function (err, rows, fields) {
             if (err){
                 console.warn(err)
                 connection.end();

@@ -135,7 +135,8 @@ exports.getReporteSemanal = (IdAgentParent, Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        console.warn(`select x.* from (select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`)
+        console.warn(IdAgentParent)
+       // console.warn(`select x.* from (select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x inner join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS;`)
         connection.query(`select x.* from (select * from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) order by YEARWEEKS desc) as x left join (select idUsers, MAX(IFNULL(YEARWEEKS , yearWeek)) YEARWEEKS from VW_ReporteSaldos where AgentParent = ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) or idUsers =  ${IdAgentParent} and yearWeek = YEARWEEK('${Fecha}', 1) AND IFNULL(YEARWEEKS , yearWeek -1) < YEARWEEK('${Fecha}', 1) group by idUsers) as y on x.idUsers = y.idUsers and x.YEARWEEKS = y.YEARWEEKS limit 1;`, function (err, rows, fields) {
             if (err){
                 connection.end();
@@ -571,7 +572,8 @@ exports.jerarquiaUsuarioParent = (Type, AgentParent) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type} and AgentParent = ${AgentParent} `, function (err, rows, fields) {
+        console.warn(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or  AgentParent = ${AgentParent} `)
+        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or  AgentParent = ${AgentParent} `, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

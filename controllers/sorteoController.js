@@ -1,9 +1,9 @@
-const { insertSorteo, ValidaCompraNumero, ModificarMontoMinimo, GetMontoMinimoCompra, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, BorrarSorteo, ValidaCompraNumero, ModificarMontoMinimo, GetMontoMinimoCompra, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         changeAvalaibleNumber(IdSorteo, numb, Fecha);
         res.json({msg: "Sorteo con exito", isSuccess: true})
        
@@ -13,6 +13,20 @@ exports.changeAvalaibleNumber = async (req, res) => {
     }
 
 }
+exports.BorrarSorteo = async (req, res) => {
+    const {IdSorteo} = req.body
+    if(req.usuario){
+
+        BorrarSorteo(IdSorteo);
+        res.json({msg: "Sorteo con exito", isSuccess: true})
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+
+}
+
 exports.updateLimitesPorUsuario = async (req, res) =>{
     const { numeros, userId } = req.body
     if(req.usuario){
@@ -43,7 +57,7 @@ exports.InsertLimitePorSorteo = async (req, res) =>{
 exports.deleteLimitesPorSorteo = async (req, res) =>{
     const { sorteoId } = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         deleteLimitesPorSorteo(sorteoId);
         res.json({msg: "exito", isSuccess: true})
        
@@ -55,7 +69,7 @@ exports.deleteLimitesPorSorteo = async (req, res) =>{
 exports.deleteLimites = async (req, res) =>{
     const { userId } = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         deleteLimites(userId);
         res.json({msg: "exito", isSuccess: true})
        
@@ -67,7 +81,7 @@ exports.deleteLimites = async (req, res) =>{
 exports.editSorteo = async (req, res) =>{
     const {Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga} = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         editSorteo(Id, Name, HoraLimite, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga);
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
        
@@ -79,7 +93,7 @@ exports.editSorteo = async (req, res) =>{
 exports.agregarSorteo = async (req, res) =>{
     const {Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga} = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         insertSorteo(Name, HoraLimite, isParlay, ParleyL, ParleyM, ParleyK, ParleyJ, ParleyV, ParleyS, ParleyD, SorteoL, SorteoM, SorteoK, SorteoJ, SorteoV, SorteoS, SorteoD, Paga);
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
        
@@ -91,7 +105,7 @@ exports.agregarSorteo = async (req, res) =>{
 exports.ModificarMontoMinimo = async (req, res) =>{
     const {Monto} = req.body
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         ModificarMontoMinimo(Monto);
         res.json({msg: "Sorteo agregado con exito", isSuccess: true})
        

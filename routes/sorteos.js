@@ -29,6 +29,7 @@ router.post('/InsertLimitePorSorteo', validateSessionReq, auth, sorteoController
 router.post('/GetMontoMinimoCompra', validateSessionReq, auth, sorteoController.GetMontoMinimoCompra);
 router.post('/ModificarMontoMinimo', validateSessionReq, auth, sorteoController.ModificarMontoMinimo);
 router.post('/ValidaCompraNumeros', validateSessionReq, auth, sorteoController.ValidaCompraNumeros);
+router.post('/BorrarSorteo', validateSessionReq, auth, sorteoController.BorrarSorteo);
 
 
 //GetMontoMinimoCompra

@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 
 exports.getSorteos = async (req, res) =>{
     if(req.usuario){
-        console.log(req.usuario.idUsers)
+
         getSorteos().then(response=>{
             res.json({Sorteos: response})
         });
@@ -15,7 +15,6 @@ exports.getSorteos = async (req, res) =>{
 }
 exports.getSorteosDropdown = async (req, res) =>{
     if(req.usuario){
-        console.log(req.usuario.idUsers)
         GetAvalaibleSorteos().then(response=>{
             res.json({response})
         });
@@ -79,7 +78,6 @@ exports.sendMail = async (req, res) => {
     request(options, function (error, response, msg) {
         if (error) throw new Error(error);
 
-        console.log(msg);
     });
     res.sendStatus(200);
 }

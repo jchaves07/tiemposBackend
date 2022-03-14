@@ -78,7 +78,7 @@ const insertNewUser = (Username, Fullname, Password, Type, AgentParent) => {
     })
     connection.connect();
     var userAdd = { Fullname,Username, Password, Type, AgentParent };
-    console.log(userAdd)
+
     var query = connection.query('INSERT INTO Users SET ?', userAdd, function (error, results, fields) {
         if (error) throw error;
         connection.end();
@@ -178,7 +178,7 @@ const getSorteos = () => {
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT id, Name, HoraLimite, isParlay, Paga FROM Sorteos', function (err, rows, fields) {
+        connection.query('SELECT id, Name, HoraLimite, isParlay, Paga,borrar Borrar, Enable FROM SorteosView', function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
@@ -254,13 +254,24 @@ exports.UpdatePermisos = ( IdUser, CambiarPassword,AgregarUsuario, LimitesUsuari
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    console.log(DeclaraGanador)
     connection.query(`UPDATE Permisos SET AnularSorteo = ${AnularSorteo ? 1 : 0}, AnularTicket= ${AnularTicket ? 1 : 0}, Permisos= ${Permisos ? 1 : 0}, CambiarPassword = ${CambiarPassword ? 1 : 0 },AgregarUsuario = ${AgregarUsuario ? 1 : 0 }, LimitesUsuario = ${LimitesUsuario ? 1 : 0 }, AgregarSaldo = ${AgregarSaldo ? 1 : 0 }, EditarSorteo = ${EditarSorteo ? 1 : 0 }, DeclaraGanador = ${DeclaraGanador ? 1 : 0 }, MontoMinimo = ${MontoMinimo ? 1 : 0 }, LimiteSorteo = ${LimiteSorteo ? 1 : 0} WHERE IdUser = ${IdUser};`, function (error, results, fields) {
         if (error) throw error;
         connection.end();
     });
 }
-
+exports.BorrarSorteo = ( IdSorteo ) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    connection.query(`update Sorteos set Enable = 0  where Id = ${IdSorteo};`, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
 
 
 
@@ -354,7 +365,6 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
         connection.connect();
         var filter = [  IdSorteo , Fecha ]; 
         var sql = mysql.format('select Number, Sum(Monto) Monto, Fecha, Disponible from (SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM NumerosDisponiblesPorSorteo x left join CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?) x group by Number, Fecha, Disponible', filter);
-        console.log(sql)
         connection.query(sql, function (error, results, fields) {
             if (error){
                 connection.end();
@@ -377,7 +387,6 @@ exports.resumenGranTotal = (IdUser, Fecha) =>{
 })
 connection.connect(); 
 var buyNumber = [IdUser, Fecha]; 
-console.log(IdUser, Fecha)
 connection.query('CALL `resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
     if (error){
         console.log(error)
@@ -385,7 +394,6 @@ connection.query('CALL `resumenGranTotal`(?, ?);', buyNumber, function (error, r
         reject(error.sqlMessage)
     } 
     connection.end();
-    console.log(results)
    resolve(results[0]);
 });
 })
@@ -407,7 +415,6 @@ connection.query('CALL `CheckBuyNumber`(? , ? , ? , ? , ?, ? );', buyNumber, fun
         reject(error.sqlMessage)
     }
     connection.end();
-    console.log(results)
    resolve(results[0]);
 });
 })
@@ -422,7 +429,6 @@ exports.revertSorteo = (IdSorteo, Fecha, Commentario) =>{
 })
 connection.connect();
 var revertBuyNumber = [  IdSorteo, Fecha, Commentario ];
-console.log(revertBuyNumber)
 connection.query('CALL `revertSorteo`(?, ?, ?);', revertBuyNumber, function (error, results, fields) {
     if (error) throw error;
     
@@ -572,13 +578,14 @@ exports.jerarquiaUsuarioParent = (Type, AgentParent) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        console.warn(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or  AgentParent = ${AgentParent} `)
-        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or  AgentParent = ${AgentParent} `, function (err, rows, fields) {
+        console.warn(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type} and AgentParent = ${AgentParent} `)
+        connection.query(`select idUsers, IFNULL(Fullname, Username) User, UT.Description Type from Users u inner join UserTypes UT on UT.Id = u.Type  where AgentParent is null and 0 = ${Type} or UT.Id = ${Type == 1 ? 2 : Type} and AgentParent = ${AgentParent} `, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)
             }
             connection.end();
+            console.log(rows)
            resolve(rows);
           })
     })
@@ -600,6 +607,7 @@ exports.jerarquiaUsuarioByAgentParent = AgentParent =>{
                 reject(err.sqlMessage)
             }
             connection.end();
+            console.log(rows)
            resolve(rows);
           })
     })
@@ -730,7 +738,6 @@ exports.validaTokens = () =>{
             
                 jwt.verify(item.CurrentToken, process.env.SECRET, function(err, decoded){
                     const dec = jwt.decode(item.CurrentToken)
-                    console.log({ msg: 'Token', dec });
                     saveToken(dec.idUsers, null)
                 }) 
             

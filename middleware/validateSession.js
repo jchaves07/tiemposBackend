@@ -16,11 +16,14 @@ module.exports = async (req, res, next) => {
        
             
             const response = await getUserByUsername(username)
-           const resx = await getsavedToken(response.idUsers)
-                    if(resx.CurrentToken != undefined && resx.CurrentToken != "" && resx.CurrentToken != null){
-                      req.error = "Sesion abierta en otro navegador, desea cerrar la otra sesion?";
-                      return next();
-                    }
+            console.log(response)
+           if(response != undefined && response.idUsers != undefined){
+            const resx = await getsavedToken(response.idUsers)
+            if(resx.CurrentToken != undefined && resx.CurrentToken != "" && resx.CurrentToken != null){
+              req.error = "Sesion abierta en otro navegador, desea cerrar la otra sesion?";
+              return next();
+            }
+           }
          
             return next();
      

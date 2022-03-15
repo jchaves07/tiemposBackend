@@ -10,7 +10,8 @@ exports.authUser = async (req, res, next) => {
         const { username, password } = req.body;
         //obtiene user de base de datos
         getUserByUsername(username).then(response => {
-            if(response == null){
+           
+            if(response == undefined){
                 res.status(401).send({ msg: 'usuario o password invalidos' });
             }
             else{

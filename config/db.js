@@ -121,7 +121,7 @@ const getUserByUsername = (Username) => {
                 reject(err.sqlMessage)
             }
             connection.end();
-            if(rows.length > 0{
+            if(rows.length > 0){
                 resolve(rows[0]);
             }
             else{

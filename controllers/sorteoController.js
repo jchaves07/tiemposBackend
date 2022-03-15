@@ -262,6 +262,7 @@ exports.resumenGranTotal = async (req, res) =>{
         res.sendStatus(401);
     }
 }
+//TODO: revisar
 exports.ValidaCompraNumeros = async (req, res) =>{
     if(req.usuario){
         const { numeros } = req.body;

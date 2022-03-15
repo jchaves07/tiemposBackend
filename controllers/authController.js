@@ -10,37 +10,43 @@ exports.authUser = async (req, res, next) => {
         const { username, password } = req.body;
         //obtiene user de base de datos
         getUserByUsername(username).then(response => {
-            //valida password 
-            if (bcrypt.compareSync(password, response.Password)) {
-                //crear JWT
-                const token = jwt.sign({
-                    idUsers: response.idUsers,
-                    Username: response.Username,
-                    Type: response.Type,
-                    Fullname: response.Fullname,
-                    AgregarUsuario: response.AgregarUsuario,
-                    LimitesUsuario: response.LimitesUsuario,
-                    AgregarSaldo: response.AgregarSaldo,
-                    EditarSorteo: response.EditarSorteo,
-                    DeclaraGanador: response.DeclaraGanador,
-                    MontoMinimo: response.MontoMinimo,
-                    LimiteSorteo: response.LimiteSorteo,
-                    Permisos: response.Permisos,
-                    AnularSorteo: response.AnularSorteo,
-                    AnularTicket: response.AnularTicket,
-                    CambiarPassword: response.CambiarPassword,
-                    BorrarSorteos: response.BorrarSorteos,
-                    AgregarSorteos: response.AgregarSorteos,
-                    DeshabilitarNumeros: response.DeshabilitarNumeros,
-                    AgentParent: response.AgentParent
-                }, process.env.SECRET, { expiresIn: '15m' });
-                saveToken(response.idUsers, token);
-                res.send({ token });
-            }
-            else {
+            if(response == null){
                 res.status(401).send({ msg: 'usuario o password invalidos' });
-                next();
             }
+            else{
+                if (bcrypt.compareSync(password, response.Password)) {
+                    //crear JWT
+                    const token = jwt.sign({
+                        idUsers: response.idUsers,
+                        Username: response.Username,
+                        Type: response.Type,
+                        Fullname: response.Fullname,
+                        AgregarUsuario: response.AgregarUsuario,
+                        LimitesUsuario: response.LimitesUsuario,
+                        AgregarSaldo: response.AgregarSaldo,
+                        EditarSorteo: response.EditarSorteo,
+                        DeclaraGanador: response.DeclaraGanador,
+                        MontoMinimo: response.MontoMinimo,
+                        LimiteSorteo: response.LimiteSorteo,
+                        Permisos: response.Permisos,
+                        AnularSorteo: response.AnularSorteo,
+                        AnularTicket: response.AnularTicket,
+                        CambiarPassword: response.CambiarPassword,
+                        BorrarSorteos: response.BorrarSorteos,
+                        AgregarSorteos: response.AgregarSorteos,
+                        DeshabilitarNumeros: response.DeshabilitarNumeros,
+                        AgentParent: response.AgentParent
+                    }, process.env.SECRET, { expiresIn: '15m' });
+                    saveToken(response.idUsers, token);
+                    res.send({ token });
+                }
+                else {
+                    res.status(401).send({ msg: 'usuario o password invalidos' });
+                    next();
+                }
+            }
+            //valida password 
+            
         });
     }
 

@@ -543,7 +543,7 @@ exports.getSorteosBySorteoID = SorteoID =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT t.IdSorteo,  case when NumeroGanador is not null then TPNV.Monto * Paga else null end PagaPremio, Paga, t.Disponible, t.Fecha, IFNULL(sum(cn.Monto),0) MontoJugado, (select Numero from  GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM SorteosDisponibles t left join CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha inner join Sorteos SO on SO.Id = t.IdSorteo left join TotalPorNumeroView TPNV on TPNV.IdSorteo = t.IdSorteo and t.Fecha = TPNV.Fecha and TPNV.NumeroGanador is not null where t.IdSorteo = ?  group by t.Fecha, Paga,case when NumeroGanador is not null then TPNV.Monto * Paga else null end, t.IdSorteo', [SorteoID], function (err, rows, fields) {
+        connection.query('SELECT t.IdSorteo,  case when NumeroGanador is not null then TPNV.Monto * Paga else null end PagaPremio, Paga, t.Disponible, t.Fecha, IFNULL(sum(cn.Monto),0) MontoJugado, (select Numero from  GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM SorteosDisponibles t left join CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha inner join Sorteos SO on SO.Id = t.IdSorteo left join TotalPorNumeroView TPNV on TPNV.IdSorteo = t.IdSorteo and t.Fecha = TPNV.Fecha and TPNV.NumeroGanador is not null where t.IdSorteo = ?  group by t.Fecha, Paga,case when NumeroGanador is not null then TPNV.Monto * Paga else null end, t.IdSorteo order by t.IdSorteo desc', [SorteoID], function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

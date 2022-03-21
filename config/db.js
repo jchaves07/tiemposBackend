@@ -11,7 +11,7 @@ exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    var pos = [ IdSorteo, numb, Fecha ];
+    var pos = [ IdSorteo, numb, Fecha ]; ///
     var query = connection.query('update NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
         if (error) throw error;
         // Neat!

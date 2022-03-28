@@ -1,5 +1,14 @@
 const bcrypt = require('bcrypt');
 const { insertNewUser, revertBuy, UpdatePermisos, getPermisos, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+
+exports.returnPass = async (req, res) => {
+    const {  pass } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    let encryptedPassword = await bcrypt.hash(pass, salt);
+    console.log(encryptedPassword)
+    res.json({encryptedPassword});
+}
+
 exports.nuevoUsuario = async (req, res) => {
     const {  username,fullname, password, type, agentParent } = req.body
     //crear nuevo usuario 

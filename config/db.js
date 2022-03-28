@@ -11,7 +11,7 @@ exports.changeAvalaibleNumber = (IdSorteo, numb, Fecha) => {
         database: process.env.DB_DATABASE
     })
     connection.connect();
-    var pos = [ IdSorteo, numb, Fecha ];
+    var pos = [ IdSorteo, numb, Fecha ]; ///
     var query = connection.query('update NumerosDisponiblesPorSorteo set Disponible = !Disponible where IdSorteo = ?  and Number = ? and Fecha = ?', pos, function (error, results, fields) {
         if (error) throw error;
         // Neat!
@@ -359,7 +359,7 @@ exports.deleteLimites = ( userId ) => {
     });
 }
 //select * from LimitePorUsuario where UserId = ?
-exports.VentasPorNumero = (IdSorteo , Fecha) =>{
+exports.VentasPorNumero = (IdUser, IdSorteo , Fecha) =>{
 
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -369,8 +369,9 @@ exports.VentasPorNumero = (IdSorteo , Fecha) =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        var filter = [  IdSorteo , Fecha ]; 
-        var sql = mysql.format('select Number, Sum(Monto) Monto, Fecha, Disponible from (SELECT x.Number,x.Fecha, IFNULL(t.Monto,0) Monto, x.Disponible FROM NumerosDisponiblesPorSorteo x left join CompraNumeros t on x.IdSorteo = t.IdSorteo and t.Fecha = x.Fecha and x.Number = t.Numero where x.IdSorteo = ? and x.Fecha = ?) x group by Number, Fecha, Disponible', filter);
+        var filter = [ IdUser, IdSorteo , Fecha ]; 
+        var sql = mysql.format('CALL `VentasPorNumero`(?,?,?);', filter);
+        console.warn(sql)
         connection.query(sql, function (error, results, fields) {
             if (error){
                 connection.end();
@@ -395,7 +396,7 @@ connection.connect();
 var buyNumber = [IdUser, Fecha]; 
 connection.query('CALL `resumenGranTotal`(?, ?);', buyNumber, function (error, results, fields) {
     if (error){
-        console.log(error)
+        console.log(error) 
         connection.end();
         reject(error.sqlMessage)
     } 
@@ -533,7 +534,7 @@ exports.getUserList = (id) =>{
           })
     })
 }
-exports.getSorteosBySorteoID = SorteoID =>{
+exports.getSorteosBySorteoID = (IdUser, SorteoID) =>{
     
     return new Promise((resolve, reject) =>{
         const connection = mysql.createConnection({
@@ -543,7 +544,7 @@ exports.getSorteosBySorteoID = SorteoID =>{
             database: process.env.DB_DATABASE
         })
         connection.connect();
-        connection.query('SELECT t.IdSorteo,  case when NumeroGanador is not null then TPNV.Monto * Paga else null end PagaPremio, Paga, t.Disponible, t.Fecha, IFNULL(sum(cn.Monto),0) MontoJugado, (select Numero from  GanadorPorSorteo p where p.IdSorteo = t.IdSorteo and t.Fecha = p.Fecha) Numero FROM SorteosDisponibles t left join CompraNumeros cn on cn.IdSorteo = t.IdSorteo and cn.Fecha = t.Fecha inner join Sorteos SO on SO.Id = t.IdSorteo left join TotalPorNumeroView TPNV on TPNV.IdSorteo = t.IdSorteo and t.Fecha = TPNV.Fecha and TPNV.NumeroGanador is not null where t.IdSorteo = ?  group by t.Fecha, Paga,case when NumeroGanador is not null then TPNV.Monto * Paga else null end, t.IdSorteo order by t.Fecha desc', [SorteoID], function (err, rows, fields) {
+        connection.query(`CALL SorteosBySorteoID('${IdUser}',${SorteoID});`, function (err, rows, fields) {
             if (err){
                 connection.end();
                 reject(err.sqlMessage)

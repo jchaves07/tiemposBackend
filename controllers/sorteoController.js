@@ -132,8 +132,9 @@ exports.cloneTicket = async (req, res) =>{
 //VentasPorNumero
 exports.VentasPorNumero = async (req, res) =>{
     if(req.usuario){
-        const {SorteoID, Fecha} = req.body;
-        VentasPorNumero(SorteoID, Fecha)
+        const {SorteoID, Fecha, IdUser} = req.body;
+        console.log({SorteoID, Fecha, IdUser})
+        VentasPorNumero(IdUser, SorteoID, Fecha)
         .then(response => {
             res.json(response);
         })
@@ -158,12 +159,12 @@ exports.GetSorteoName = async (req, res) =>{
 
 exports.GetSorteosBySorteoID = async (req, res) =>{
     if(req.usuario){
-        const {SorteoID} = req.body;
-        getSorteosBySorteoID(SorteoID)
+        const {SorteoID, IdUser} = req.body;
+        getSorteosBySorteoID(IdUser, SorteoID)
         .then(response => {
             res.json(response);
         })
-    }
+    } 
     else{
         res.sendStatus(401);
     }

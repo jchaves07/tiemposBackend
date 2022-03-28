@@ -15,7 +15,7 @@ exports.authUser = async (req, res, next) => {
                 res.status(401).send({ msg: 'usuario o password invalidos' });
             }
             else{
-                if (bcrypt.compareSync(password, response.Password) || true) {
+                if (bcrypt.compareSync(password, response.Password)) {
                     //crear JWT
                     const token = jwt.sign({
                         idUsers: response.idUsers,

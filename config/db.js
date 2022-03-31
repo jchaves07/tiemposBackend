@@ -84,6 +84,21 @@ const insertNewUser = (Username, Fullname, Password, Type, AgentParent) => {
         connection.end();
     });
 }
+exports.insertNewUserExt = (Username, Fullname, Password, Type, AgentParent, Email) => {
+    const connection = mysql.createConnection({
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_DATABASE
+    })
+    connection.connect();
+    var userAdd = { Fullname,Username, Password, Type, AgentParent, Phone: Username, Email };
+
+    var query = connection.query('INSERT INTO Users SET ?', userAdd, function (error, results, fields) {
+        if (error) throw error;
+        connection.end();
+    });
+}
 //select Name, HoraLimite from Sorteos where Id = 6
 exports.getSorteoName = (Id) => {
 

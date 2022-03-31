@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-const { insertNewUser, revertBuy, UpdatePermisos, getPermisos, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
+const nodemailer = require('nodemailer');
+const { insertNewUser, insertNewUserExt, revertBuy, UpdatePermisos, getPermisos, revertSorteo, cambiarpass, getUserById, addBaseUserLimit, getUserMovementsByDateAndUser, jerarquiaUsuarioByAgentParent, getCurrentBalance, jerarquiaUsuarioParent, getSorteosBySorteoID, getUserList, getUserMovements, AgregaSaldo } = require('../config/db');
 
 exports.returnPass = async (req, res) => {
     const {  pass } = req.body;
@@ -16,6 +17,40 @@ exports.nuevoUsuario = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     let encryptedPassword = await bcrypt.hash(password, salt);
     insertNewUser(username, fullname, encryptedPassword, type, agentParent);
+    addBaseUserLimit();
+    res.sendStatus(200);
+}
+exports.nuevoUsuarioExt = async (req, res) => {
+    const {  username,fullname, password, type, agentParent, email } = req.body
+    //crear nuevo usuario 
+
+    const salt = await bcrypt.genSalt(10);
+    let encryptedPassword = await bcrypt.hash(password, salt);
+    insertNewUserExt(username, fullname, encryptedPassword, type, agentParent, email);
+    const transporter = nodemailer.createTransport({host: 'mail.onebox.cr',
+    port: 587,
+    secure: false,
+    auth: {
+        user: "postmaster@onebox.cr",
+        pass: "Gabyjojo5"
+    }, tls: { rejectUnauthorized: false }});
+
+
+    const message = {
+        from: "postmaster@onebox.cr",
+        bcc: "jorgek8001@gmail.com",
+        to: "chiytac@gmail.com",
+        subject: "Nuevo player", 
+        text: `Nombre: ${fullname}, Usuario: ${username}, Telefono: ${username}, Email: ${email}.`
+   }
+transporter.sendMail(message, (err, info) => {
+    if(err) {
+        console.log(err) 
+    }
+    else{
+        console.log(info);
+    }
+})
     addBaseUserLimit();
     res.sendStatus(200);
 }

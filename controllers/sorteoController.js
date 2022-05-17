@@ -1,4 +1,4 @@
-const { insertSorteo, BorrarSorteo, ValidaCompraNumero, ModificarMontoMinimo, GetMontoMinimoCompra, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
+const { insertSorteo, GetGroups, BorrarSorteo, ValidaCompraNumero, ModificarMontoMinimo, GetMontoMinimoCompra, resumenGranTotal, InsertLimitePorSorteo, deleteLimitesPorSorteo, InsertLimitePorUsuario, deleteLimites, getLimiteSorteoPorUser, editSorteo, getSorteoById, DisableSorteo, cloneTicket, GetIdTicket,VentasPorNumero,changeAvalaibleNumber, GetNumerosDisponibles, getLimiteSorteo,getSorteoName, setGanador, getSorteosBySorteoID, compraNumero } = require('../config/db');
 
 exports.changeAvalaibleNumber = async (req, res) => {
     const {IdSorteo, numb, Fecha} = req.body
@@ -229,7 +229,19 @@ exports.GetNumerosDisponibles = async (req, res) =>{
         res.sendStatus(401);
     }
 }
-//DisableSorteo
+
+exports.GetGroups = async (req, res) =>{
+    if(req.usuario){
+        const { Id } = req.body;
+        GetGroups(Id).then(response=>{
+            res.json(response)
+        });
+       
+    }
+    else{
+        res.sendStatus(401);
+    }
+}
 exports.DisableSorteo = async (req, res) =>{
     if(req.usuario){
         const { IdSorteo,Fecha  } = req.body;

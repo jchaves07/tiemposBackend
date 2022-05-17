@@ -202,7 +202,6 @@ const getSorteos = () => {
            resolve(rows);
           })
     })
-   
 }
 exports.getPermisos = (IdUser) => {
 
@@ -901,6 +900,25 @@ exports.getLimiteSorteoPorUser = (userId) => {
         connection.query(`SELECT Numero, Monto, UserId FROM LimitePorUsuario where UserId = ${userId}`, function (err, rows, fields) {
             if (err){
                 console.warn(err)
+                connection.end();
+                reject(err.sqlMessage)
+            }
+            connection.end();
+           resolve(rows);
+          })
+    })
+}
+exports.GetGroups = (id) =>{
+    return new Promise((resolve, reject) =>{
+        const connection = mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE
+        })
+        connection.connect();
+        connection.query(`SELECT * FROM TiemposDB.LastSorteoView where GroupId = ${id}`, function (err, rows, fields) {
+            if (err){
                 connection.end();
                 reject(err.sqlMessage)
             }

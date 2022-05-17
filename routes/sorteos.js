@@ -30,8 +30,8 @@ router.post('/GetMontoMinimoCompra', validateSessionReq, auth, sorteoController.
 router.post('/ModificarMontoMinimo', validateSessionReq, auth, sorteoController.ModificarMontoMinimo);
 router.post('/ValidaCompraNumeros', validateSessionReq, auth, sorteoController.ValidaCompraNumeros);
 router.post('/BorrarSorteo', validateSessionReq, auth, sorteoController.BorrarSorteo);
-
-
+router.post('/GetGroups', validateSessionReq, auth, sorteoController.GetGroups);
+//GetGroups
 //GetMontoMinimoCompra
 module.exports = router;
 

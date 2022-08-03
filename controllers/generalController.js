@@ -111,7 +111,9 @@ exports.sendMailGeneral = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     request(options, function (error, response, msg) {
         if (error){
-            res.json({error})
+            return res.status(400).send({
+                message: error
+             });
         }
         else{
             res.json(response);

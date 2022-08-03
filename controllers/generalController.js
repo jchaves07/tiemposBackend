@@ -92,7 +92,7 @@ exports.sendMailGeneral = async (req, res) => {
         {
             'Postman-Token': 'c6e2e63a-6e5f-43ac-821d-4483a6822717',
             'cache-control': 'no-cache',
-            Authorization: 'Bearer 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',
+            Authorization: 'Bearer ',
             'Content-Type': 'application/json'
         },
         body:

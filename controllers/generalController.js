@@ -123,3 +123,45 @@ exports.sendMailGeneral = async (req, res) => {
     });
   
 }
+exports.sendMailAUDI = async (req, res) => {
+    const {msg, subject} = req.body;
+
+    var request = require("request");
+    var options = {
+        method: 'POST',
+        url: 'https://api.sendgrid.com/v3/mail/send',
+        headers:
+        {
+            'Postman-Token': 'c6e2e63a-6e5f-43ac-821d-4483a6822717',
+            'cache-control': 'no-cache',
+            Authorization: 'Bearer ',
+            'Content-Type': 'application/json'
+        },
+        body:
+        {
+            personalizations:
+                [{
+                    to: [{ email: "nilton.obregon@agenciadatsun.com" }, { email: "m.hernandez@audicr.com" }],
+                  cc: [{ email: "jorgek8001@gmail.com" }],
+                    subject: subject
+                }],
+            from: { email: 'agentevirtual@nissancr.com' },
+            content: [{ type: 'text/html', value: msg }]
+        },
+        json: true
+    };
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    request(options, function (error, response, msg) {
+        if (error){
+            return res.status(400).send({
+                message: error
+             });
+        }
+        else{
+            res.json(response);
+        }
+
+
+    });
+  
+}

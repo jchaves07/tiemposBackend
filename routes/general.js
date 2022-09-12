@@ -10,5 +10,6 @@ router.post('/ReporteSemanal', validateSessionReq, auth, generalController.Repor
 router.get('/getSorteosDropdown',validateSessionReq, auth, generalController.getSorteosDropdown);
 router.get('/GetWeeks', validateSessionReq, auth, generalController.GetWeeks);
 router.post('/sendMailGeneral', generalController.sendMailGeneral);
+router.post('/sendMailAUDI', generalController.sendMailAUDI)
 
 module.exports = router;
